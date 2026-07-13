@@ -1,5 +1,11 @@
 # EgitimAkademisi
 
+## 🔗 Canlı Demo
+[egitim-akademisi.vercel.app](https://egitim-akademisi.vercel.app)
+
+## 📋 Proje Hakkında
+Angular 17+ ile geliştirilen Eğitim Akademisi, Kurs ve Sınav Yönetim Paneli. Kurs, katılımcı, sınav, sertifika ve audit log yönetimi içeren kapsamlı bir yönetim panelidir.
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
 
 ## Development server
