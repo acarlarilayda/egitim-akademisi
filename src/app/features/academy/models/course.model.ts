@@ -3,8 +3,8 @@ import { CourseStatus } from '../../../core/models/enums';
 
 /**
  * Kurs (Course) modeli.
- * Doküman Madde 7: "İlgili modülün ana veri nesnesidir; id, createdAt, updatedAt alanları bulunmalıdır."
- * BaseModel'i extends ederek bu ortak alanları otomatik alıyoruz.
+ * Sistemdeki her kursun ana veri nesnesidir.
+ * BaseModel'i extends ederek id, createdAt, updatedAt alanlarını otomatik alıyoruz.
  */
 export interface Course extends BaseModel {
   title: string;
