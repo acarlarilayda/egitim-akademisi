@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { ThemeToggleComponent } from './shared/components/theme-toggle/theme-toggle.component'; // ← YENİ SATIR
+import { MainLayoutComponent } from './shared/components/main-layout/main-layout.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ThemeToggleComponent], // ← ThemeToggleComponent EKLENDİ
+  imports: [MainLayoutComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

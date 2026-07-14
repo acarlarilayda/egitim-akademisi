@@ -24,7 +24,7 @@ import { NAV_ITEMS } from '../../../core/models/nav-item.model';
 
       <nav class="sidebar__nav">
         @for (item of navItems; track item.route) {
-          
+          <a
             [routerLink]="item.route"
             routerLinkActive="sidebar__link--active"
             class="sidebar__link"
