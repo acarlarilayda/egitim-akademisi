@@ -1,0 +1,105 @@
+<div class="page">
+  <a class="back-link" routerLink="/kurslar">← Kurslara dön</a>
+
+  <div class="detail__state" *ngIf="loading">
+    <span class="detail__spinner"></span>
+    <span>Yükleniyor...</span>
+  </div>
+
+  <div class="detail__state detail__state--error" *ngIf="!loading && errorMessage">
+    <span>⚠️ {{ errorMessage }}</span>
+    <button type="button" class="detail__retry" (click)="load()">Tekrar dene</button>
+  </div>
+
+  <ng-container *ngIf="!loading && !errorMessage && course as c">
+    <div class="page__header">
+      <h1>{{ c.title }}</h1>
+      <span class="status-badge" [attr.data-status]="c.status">{{ c.status }}</span>
+    </div>
+
+    <p class="course-description">{{ c.description }}</p>
+
+    <div class="course-meta">
+      <span><strong>Kontenjan:</strong> {{ c.capacity }}</span>
+      <span><strong>Geçme Notu:</strong> {{ c.passingScore }}</span>
+      <span><strong>Başlangıç:</strong> {{ c.startDate | date: 'dd.MM.yyyy' }}</span>
+      <span><strong>Bitiş:</strong> {{ c.endDate | date: 'dd.MM.yyyy' }}</span>
+    </div>
+
+    <div class="tabs">
+      <button type="button" [class.tabs__button--active]="activeTab === 'modules'" (click)="setTab('modules')">
+        Modüller ({{ modules.length }})
+      </button>
+      <button
+        type="button"
+        [class.tabs__button--active]="activeTab === 'participants'"
+        (click)="setTab('participants')"
+      >
+        Katılımcılar ({{ enrollmentRows.length }})
+      </button>
+      <button type="button" [class.tabs__button--active]="activeTab === 'results'" (click)="setTab('results')">
+        Sonuçlar ({{ examResultRows.length }})
+      </button>
+    </div>
+
+    <div class="tab-panel" *ngIf="activeTab === 'modules'">
+      <p class="tab-panel__empty" *ngIf="modules.length === 0">Bu kursa ait modül yok.</p>
+      <table class="tab-table" *ngIf="modules.length > 0">
+        <thead>
+          <tr>
+            <th>Sıra</th>
+            <th>Modül Adı</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let module of modules">
+            <td>{{ module.order }}</td>
+            <td>{{ module.title }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tab-panel" *ngIf="activeTab === 'participants'">
+      <p class="tab-panel__empty" *ngIf="enrollmentRows.length === 0">Bu kursa ait katılımcı kaydı yok.</p>
+      <table class="tab-table" *ngIf="enrollmentRows.length > 0">
+        <thead>
+          <tr>
+            <th>Katılımcı</th>
+            <th>Durum</th>
+            <th>Kayıt Tarihi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of enrollmentRows">
+            <td>{{ row.participantName }}</td>
+            <td><span class="status-badge" [attr.data-status]="row.status">{{ row.status }}</span></td>
+            <td>{{ row.enrolledAt | date: 'dd.MM.yyyy' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tab-panel" *ngIf="activeTab === 'results'">
+      <p class="tab-panel__empty" *ngIf="examResultRows.length === 0">Bu kursa ait sınav sonucu yok.</p>
+      <table class="tab-table" *ngIf="examResultRows.length > 0">
+        <thead>
+          <tr>
+            <th>Katılımcı</th>
+            <th>Sınav</th>
+            <th>Puan</th>
+            <th>Sonuç</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of examResultRows">
+            <td>{{ row.participantName }}</td>
+            <td>{{ row.examTitle }}</td>
+            <td>{{ row.score }}</td>
+            <td>{{ row.isPassed ? 'Geçti' : 'Kaldı' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>
