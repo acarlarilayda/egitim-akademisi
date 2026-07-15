@@ -1,0 +1,25 @@
+<div class="page">
+  <div class="page__header">
+    <h1>Dashboard</h1>
+  </div>
+
+  <div class="dashboard__state" *ngIf="loading">
+    <span class="dashboard__spinner"></span>
+    <span>Yükleniyor...</span>
+  </div>
+
+  <div class="dashboard__state dashboard__state--error" *ngIf="!loading && errorMessage">
+    <span>⚠️ {{ errorMessage }}</span>
+    <button type="button" class="dashboard__retry" (click)="load()">Tekrar dene</button>
+  </div>
+
+  <div class="dashboard__grid" *ngIf="!loading && !errorMessage">
+    <div class="kpi-card" *ngFor="let card of cards">
+      <span class="kpi-card__icon">{{ card.icon }}</span>
+      <div class="kpi-card__body">
+        <span class="kpi-card__value">{{ card.value }}</span>
+        <span class="kpi-card__label">{{ card.label }}</span>
+      </div>
+    </div>
+  </div>
+</div>

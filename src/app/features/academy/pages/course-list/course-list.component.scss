@@ -1,0 +1,56 @@
+.page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+
+  h1 {
+    font-size: var(--font-size-xl);
+    margin: 0;
+  }
+}
+
+.page__new-button {
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.page__new-button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 2px var(--space-sm);
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: capitalize;
+  background-color: var(--color-surface-alt);
+  color: var(--color-text-secondary);
+}
+
+.status-badge[data-status='published'] {
+  background-color: rgba(22, 163, 74, 0.12);
+  color: var(--color-success);
+}
+
+.status-badge[data-status='draft'] {
+  background-color: rgba(100, 116, 139, 0.12);
+  color: var(--color-text-secondary);
+}
+
+.status-badge[data-status='completed'] {
+  background-color: rgba(8, 145, 178, 0.12);
+  color: var(--color-info);
+}
+
+.status-badge[data-status='archived'] {
+  background-color: rgba(220, 38, 38, 0.1);
+  color: var(--color-danger);
+}

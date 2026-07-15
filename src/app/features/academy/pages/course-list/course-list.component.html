@@ -1,0 +1,27 @@
+<div class="page">
+  <div class="page__header">
+    <h1>Kurslar</h1>
+    <a class="page__new-button" routerLink="/kurslar/yeni">+ Yeni Kurs</a>
+  </div>
+
+  <app-data-table
+    [columns]="columns"
+    [rows]="courses"
+    [loading]="loading()"
+    [errorMessage]="errorMessage"
+    emptyMessage="Henüz kayıtlı kurs yok."
+    (retry)="load()"
+  >
+    <ng-template dtCell="status" let-value>
+      <span class="status-badge" [attr.data-status]="value">{{ value }}</span>
+    </ng-template>
+
+    <ng-template dtCell="startDate" let-value>
+      {{ value | date: 'dd.MM.yyyy' }}
+    </ng-template>
+
+    <ng-template dtCell="actions" let-row="row">
+      <a [routerLink]="['/kurslar', row.id]">Detay</a>
+    </ng-template>
+  </app-data-table>
+</div>
