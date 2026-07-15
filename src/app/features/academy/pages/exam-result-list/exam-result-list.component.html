@@ -1,0 +1,28 @@
+<div class="page">
+  <div class="page__header">
+    <h1>Sonuçlar</h1>
+  </div>
+
+  <app-data-table
+    [columns]="columns"
+    [rows]="results"
+    [loading]="loading()"
+    [errorMessage]="errorMessage"
+    emptyMessage="Henüz kayıtlı sınav sonucu yok."
+    (retry)="load()"
+  >
+    <ng-template dtCell="participantId" let-value>
+      {{ participantName(value) }}
+    </ng-template>
+
+    <ng-template dtCell="examId" let-value>
+      {{ examTitle(value) }}
+    </ng-template>
+
+    <ng-template dtCell="isPassed" let-value>
+      <span class="status-badge" [attr.data-status]="value ? 'gecti' : 'kaldi'">
+        {{ value ? 'Geçti' : 'Kaldı' }}
+      </span>
+    </ng-template>
+  </app-data-table>
+</div>
