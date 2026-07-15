@@ -1,0 +1,47 @@
+.page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+
+  h1 {
+    font-size: var(--font-size-xl);
+    margin: 0;
+  }
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 2px var(--space-sm);
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: capitalize;
+  background-color: var(--color-surface-alt);
+  color: var(--color-text-secondary);
+}
+
+.status-badge[data-status='eligible'] {
+  background-color: rgba(22, 163, 74, 0.12);
+  color: var(--color-success);
+}
+
+.status-badge[data-status='issued'] {
+  background-color: rgba(8, 145, 178, 0.12);
+  color: var(--color-info);
+}
+
+.issue-button {
+  padding: 4px var(--space-sm);
+  border: none;
+  border-radius: 6px;
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.issue-button:hover {
+  background-color: var(--color-primary-hover);
+}

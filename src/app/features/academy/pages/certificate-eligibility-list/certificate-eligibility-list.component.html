@@ -1,0 +1,45 @@
+<div class="page">
+  <div class="page__header">
+    <h1>Sertifikalar</h1>
+  </div>
+
+  <app-data-table
+    [columns]="columns"
+    [rows]="eligibilities"
+    [loading]="loading()"
+    [errorMessage]="errorMessage"
+    emptyMessage="Henüz sertifika uygunluk kaydı yok."
+    (retry)="load()"
+  >
+    <ng-template dtCell="participantId" let-value>
+      {{ participantName(value) }}
+    </ng-template>
+
+    <ng-template dtCell="courseId" let-value>
+      {{ courseTitle(value) }}
+    </ng-template>
+
+    <ng-template dtCell="attendanceRate" let-value>
+      %{{ value }}
+    </ng-template>
+
+    <ng-template dtCell="examPassed" let-value>
+      {{ value ? 'Geçti' : 'Kaldı' }}
+    </ng-template>
+
+    <ng-template dtCell="status" let-value>
+      <span class="status-badge" [attr.data-status]="value">{{ value }}</span>
+    </ng-template>
+
+    <ng-template dtCell="actions" let-row="row">
+      <button
+        type="button"
+        class="issue-button"
+        *ngIf="row.status === Status.Eligible"
+        (click)="issueCertificate(row.id)"
+      >
+        Sertifika Ver
+      </button>
+    </ng-template>
+  </app-data-table>
+</div>

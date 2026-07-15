@@ -1,0 +1,91 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { CertificateEligibilityService } from '../../services/certificate-eligibility.service';
+import { CourseService } from '../../services/course.service';
+import { ParticipantService } from '../../services/participant.service';
+import { CertificateEligibility } from '../../models/certificate-eligibility.model';
+import { CertificateEligibilityStatus } from '../../../../core/models/enums';
+import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
+import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
+
+/**
+ * Sertifika uygunluğu listesi ekranı (/sertifikalar).
+ * "Eligible" durumundaki kayıtlar için sertifika verme aksiyonu sunar.
+ */
+@Component({
+  selector: 'app-certificate-eligibility-list',
+  standalone: true,
+  imports: [CommonModule, DataTableComponent, DataTableCellDirective],
+  templateUrl: './certificate-eligibility-list.component.html',
+  styleUrl: './certificate-eligibility-list.component.scss',
+})
+export class CertificateEligibilityListComponent implements OnInit {
+  eligibilities: CertificateEligibility[] = [];
+  errorMessage: string | null = null;
+  courseTitleById = new Map<string, string>();
+  participantNameById = new Map<string, string>();
+
+  readonly loading = this.certificateEligibilityService.loading;
+  readonly Status = CertificateEligibilityStatus;
+
+  readonly columns: TableColumn[] = [
+    { key: 'participantId', label: 'Katılımcı', sortable: false },
+    { key: 'courseId', label: 'Kurs', sortable: false },
+    { key: 'attendanceRate', label: 'Katılım %', sortable: true },
+    { key: 'examPassed', label: 'Sınav', sortable: true },
+    { key: 'status', label: 'Durum', sortable: true },
+    { key: 'actions', label: '' },
+  ];
+
+  constructor(
+    private certificateEligibilityService: CertificateEligibilityService,
+    private courseService: CourseService,
+    private participantService: ParticipantService
+  ) {}
+
+  ngOnInit(): void {
+    this.load();
+  }
+
+  load(): void {
+    this.errorMessage = null;
+
+    this.courseService.getAll().subscribe({
+      next: (courses) => {
+        this.courseTitleById = new Map(courses.map((c) => [c.id, c.title]));
+      },
+    });
+
+    this.participantService.getAll().subscribe({
+      next: (participants) => {
+        this.participantNameById = new Map(participants.map((p) => [p.id, p.fullName]));
+      },
+    });
+
+    this.certificateEligibilityService.getAll().subscribe({
+      next: (eligibilities) => (this.eligibilities = eligibilities),
+      error: (err) => (this.errorMessage = err?.message ?? 'Sertifika kayıtları yüklenirken bir hata oluştu.'),
+    });
+  }
+
+  courseTitle(courseId: string): string {
+    return this.courseTitleById.get(courseId) ?? courseId;
+  }
+
+  participantName(participantId: string): string {
+    return this.participantNameById.get(participantId) ?? participantId;
+  }
+
+  issueCertificate(id: string): void {
+    const confirmed = confirm('Bu katılımcıya sertifika vermek istediğinize emin misiniz?');
+    if (!confirmed) {
+      return;
+    }
+
+    this.errorMessage = null;
+    this.certificateEligibilityService.issueCertificate(id).subscribe({
+      next: () => this.load(),
+      error: (err) => (this.errorMessage = err?.message ?? 'Sertifika verilirken bir hata oluştu.'),
+    });
+  }
+}

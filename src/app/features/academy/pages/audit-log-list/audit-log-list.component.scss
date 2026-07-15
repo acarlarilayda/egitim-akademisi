@@ -1,0 +1,11 @@
+.page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+
+  h1 {
+    font-size: var(--font-size-xl);
+    margin: 0;
+  }
+}
