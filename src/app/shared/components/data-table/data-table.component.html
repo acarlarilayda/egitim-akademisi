@@ -1,0 +1,44 @@
+<div class="data-table">
+  <div class="data-table__state" *ngIf="loading">
+    <span class="data-table__spinner"></span>
+    <span>Yükleniyor...</span>
+  </div>
+
+  <div class="data-table__state data-table__state--error" *ngIf="!loading && errorMessage">
+    <span>⚠️ {{ errorMessage }}</span>
+    <button type="button" class="data-table__retry" (click)="retry.emit()">Tekrar dene</button>
+  </div>
+
+  <div class="data-table__state data-table__state--empty" *ngIf="!loading && !errorMessage && rows.length === 0">
+    {{ emptyMessage }}
+  </div>
+
+  <table class="data-table__table" *ngIf="!loading && !errorMessage && rows.length > 0">
+    <thead>
+      <tr>
+        <th
+          *ngFor="let column of columns"
+          [class.data-table__header--sortable]="column.sortable"
+          (click)="onSort(column)"
+        >
+          {{ column.label }}
+          <span class="data-table__sort-icon" *ngIf="sortKey === column.key">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of sortedRows; trackBy: trackByFn">
+        <td *ngFor="let column of columns">
+          <ng-container *ngIf="getCellTemplate(column.key) as cellTemplate; else defaultCell">
+            <ng-container
+              *ngTemplateOutlet="cellTemplate.templateRef; context: { $implicit: cellValue(row, column.key), row: row }"
+            ></ng-container>
+          </ng-container>
+          <ng-template #defaultCell>{{ cellValue(row, column.key) }}</ng-template>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
