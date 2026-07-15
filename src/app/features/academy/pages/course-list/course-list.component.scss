@@ -14,14 +14,26 @@
   padding: var(--space-sm) var(--space-md);
   background-color: var(--color-primary);
   color: var(--color-primary-contrast);
+  border: none;
   border-radius: 6px;
-  text-decoration: none;
+  cursor: pointer;
   font-size: var(--font-size-sm);
   font-weight: 600;
 }
 
 .page__new-button:hover {
   background-color: var(--color-primary-hover);
+}
+
+.link-button {
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  margin-left: var(--space-sm);
+  text-decoration: underline;
 }
 
 .status-badge {

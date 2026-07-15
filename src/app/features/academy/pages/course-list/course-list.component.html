@@ -1,7 +1,7 @@
 <div class="page">
   <div class="page__header">
     <h1>Kurslar</h1>
-    <a class="page__new-button" routerLink="/kurslar/yeni">+ Yeni Kurs</a>
+    <button type="button" class="page__new-button" (click)="openCreateDialog()">+ Yeni Kurs</button>
   </div>
 
   <app-data-table
@@ -22,6 +22,20 @@
 
     <ng-template dtCell="actions" let-row="row">
       <a [routerLink]="['/kurslar', row.id]">Detay</a>
+      <button type="button" class="link-button" (click)="openEditDialog(row)">Düzenle</button>
     </ng-template>
   </app-data-table>
 </div>
+
+<app-dialog
+  [open]="dialogOpen"
+  [title]="editingCourse ? 'Kursu Düzenle' : 'Yeni Kurs'"
+  (closed)="onDialogClosed()"
+>
+  <app-course-form
+    [course]="editingCourse"
+    [instructors]="instructors"
+    (saved)="onSaved()"
+    (cancelled)="onDialogClosed()"
+  ></app-course-form>
+</app-dialog>
