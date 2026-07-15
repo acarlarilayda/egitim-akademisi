@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { StorageService } from '../../../core/services/storage.service';
+import { MockApiService } from '../../../core/services/mock-api.service';
+import { AsyncEntityService } from '../../../core/services/async-entity-base.service';
 import { ExamResult } from '../models/exam-result.model';
 import { demoExamResults } from '../../../core/mock-data/demo-data';
 
@@ -9,50 +11,30 @@ const STORAGE_KEY = 'academy-exam-results';
 /**
  * Sınav Sonucu (ExamResult) CRUD işlemlerini yönetir.
  * Sonuç oluşturulurken puan ve geçme durumu otomatik hesaplanır.
+ * Tüm public metodlar mock API üzerinden asenkron çalışır.
  */
 @Injectable({
   providedIn: 'root',
 })
-export class ExamResultService {
-  private examResultsSubject = new BehaviorSubject<ExamResult[]>([]);
-  public examResults$: Observable<ExamResult[]> = this.examResultsSubject.asObservable();
+export class ExamResultService extends AsyncEntityService<ExamResult> {
+  readonly examResults$ = this.items$;
 
-  constructor(private storageService: StorageService) {
-    this.storageService.seedIfEmpty(STORAGE_KEY, demoExamResults);
-    this.loadExamResults();
-  }
-
-  private loadExamResults(): void {
-    const examResults = this.storageService.getItem<ExamResult>(STORAGE_KEY);
-    this.examResultsSubject.next(examResults);
+  constructor(storageService: StorageService, mockApi: MockApiService) {
+    super(STORAGE_KEY, storageService, mockApi, demoExamResults);
   }
 
   /**
-   * Tüm sınav sonuçlarını senkron olarak döner.
+   * Belirtilen sınava ait tüm sonuçları asenkron olarak döner.
    */
-  getAll(): ExamResult[] {
-    return this.examResultsSubject.value;
+  getByExamId(examId: string): Observable<ExamResult[]> {
+    return this.runAsync(() => this.getAllSync().filter((result) => result.examId === examId));
   }
 
   /**
-   * Belirtilen ID'ye sahip sonucu bulur.
+   * Belirtilen katılımcıya ait tüm sonuçları asenkron olarak döner.
    */
-  getById(id: string): ExamResult | undefined {
-    return this.examResultsSubject.value.find((result) => result.id === id);
-  }
-
-  /**
-   * Belirtilen sınava ait tüm sonuçları döner.
-   */
-  getByExamId(examId: string): ExamResult[] {
-    return this.examResultsSubject.value.filter((result) => result.examId === examId);
-  }
-
-  /**
-   * Belirtilen katılımcıya ait tüm sonuçları döner.
-   */
-  getByParticipantId(participantId: string): ExamResult[] {
-    return this.examResultsSubject.value.filter((result) => result.participantId === participantId);
+  getByParticipantId(participantId: string): Observable<ExamResult[]> {
+    return this.runAsync(() => this.getAllSync().filter((result) => result.participantId === participantId));
   }
 
   /**
@@ -74,27 +56,26 @@ export class ExamResultService {
     wrongCount: number,
     totalQuestionCount: number,
     passingScore: number
-  ): ExamResult {
-    const score = totalQuestionCount > 0 ? Math.round((correctCount / totalQuestionCount) * 100) : 0;
-    const isPassed = score >= passingScore;
+  ): Observable<ExamResult> {
+    return this.runAsync(() => {
+      const score = totalQuestionCount > 0 ? Math.round((correctCount / totalQuestionCount) * 100) : 0;
+      const isPassed = score >= passingScore;
 
-    const now = new Date().toISOString();
-    const newResult: ExamResult = {
-      id: crypto.randomUUID(),
-      examId,
-      participantId,
-      correctCount,
-      wrongCount,
-      score,
-      isPassed,
-      createdAt: now,
-      updatedAt: now,
-    };
+      const now = new Date().toISOString();
+      const newResult: ExamResult = {
+        id: crypto.randomUUID(),
+        examId,
+        participantId,
+        correctCount,
+        wrongCount,
+        score,
+        isPassed,
+        createdAt: now,
+        updatedAt: now,
+      };
 
-    const updatedResults = [...this.examResultsSubject.value, newResult];
-    this.storageService.setItem(STORAGE_KEY, updatedResults);
-    this.examResultsSubject.next(updatedResults);
-
-    return newResult;
+      this.persistSync([...this.getAllSync(), newResult]);
+      return newResult;
+    });
   }
 }
