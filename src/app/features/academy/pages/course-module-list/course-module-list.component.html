@@ -1,0 +1,18 @@
+<div class="page">
+  <div class="page__header">
+    <h1>Modüller</h1>
+  </div>
+
+  <app-data-table
+    [columns]="columns"
+    [rows]="modules"
+    [loading]="loading()"
+    [errorMessage]="errorMessage"
+    emptyMessage="Henüz kayıtlı modül yok."
+    (retry)="load()"
+  >
+    <ng-template dtCell="courseId" let-value>
+      {{ courseTitle(value) }}
+    </ng-template>
+  </app-data-table>
+</div>
