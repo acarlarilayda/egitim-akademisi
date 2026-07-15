@@ -1,0 +1,84 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="course-form">
+  <app-form-field
+    label="Kurs Adı"
+    [control]="form.get('title')"
+    [errorMessages]="{ required: 'Kurs adı zorunludur.', whitespace: 'Kurs adı sadece boşluk olamaz.' }"
+  >
+    <input type="text" formControlName="title" />
+  </app-form-field>
+
+  <app-form-field
+    label="Açıklama"
+    [control]="form.get('description')"
+    [errorMessages]="{ required: 'Açıklama zorunludur.', whitespace: 'Açıklama sadece boşluk olamaz.' }"
+  >
+    <textarea formControlName="description" rows="3"></textarea>
+  </app-form-field>
+
+  <app-form-field
+    label="Eğitmen"
+    [control]="form.get('instructorId')"
+    [errorMessages]="{ required: 'Eğitmen seçimi zorunludur.' }"
+  >
+    <select formControlName="instructorId">
+      <option value="" disabled>Seçiniz</option>
+      <option *ngFor="let instructor of instructors" [value]="instructor.id">{{ instructor.fullName }}</option>
+    </select>
+  </app-form-field>
+
+  <div class="course-form__row">
+    <app-form-field
+      label="Kontenjan"
+      [control]="form.get('capacity')"
+      [errorMessages]="{ required: 'Kontenjan zorunludur.', notPositive: 'Kontenjan 0’dan büyük olmalıdır.' }"
+    >
+      <input type="number" formControlName="capacity" />
+    </app-form-field>
+
+    <app-form-field
+      label="Geçme Notu"
+      [control]="form.get('passingScore')"
+      [errorMessages]="{
+        required: 'Geçme notu zorunludur.',
+        min: 'Geçme notu 0’dan küçük olamaz.',
+        max: 'Geçme notu 100’den büyük olamaz.'
+      }"
+    >
+      <input type="number" formControlName="passingScore" />
+    </app-form-field>
+  </div>
+
+  <div class="course-form__row">
+    <app-form-field
+      label="Başlangıç Tarihi"
+      [control]="form.get('startDate')"
+      [errorMessages]="{ required: 'Başlangıç tarihi zorunludur.' }"
+    >
+      <input type="date" formControlName="startDate" />
+    </app-form-field>
+
+    <app-form-field
+      label="Bitiş Tarihi"
+      [control]="form.get('endDate')"
+      [errorMessages]="{ required: 'Bitiş tarihi zorunludur.' }"
+    >
+      <input type="date" formControlName="endDate" />
+    </app-form-field>
+  </div>
+
+  <p
+    class="course-form__form-error"
+    *ngIf="form.errors?.['dateRange'] && (form.get('endDate')?.touched || form.get('startDate')?.touched)"
+  >
+    Bitiş tarihi, başlangıç tarihinden sonra olmalıdır.
+  </p>
+
+  <p class="course-form__form-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <div class="course-form__actions">
+    <button type="button" class="course-form__cancel" (click)="cancel()">İptal</button>
+    <button type="submit" class="course-form__submit" [disabled]="submitting">
+      {{ submitting ? 'Kaydediliyor...' : (isEditMode ? 'Güncelle' : 'Oluştur') }}
+    </button>
+  </div>
+</form>
