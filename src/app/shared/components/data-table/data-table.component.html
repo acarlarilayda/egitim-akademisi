@@ -29,7 +29,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let row of sortedRows; trackBy: trackByFn">
+      <tr *ngFor="let row of pagedRows; trackBy: trackByFn">
         <td *ngFor="let column of columns">
           <ng-container *ngIf="getCellTemplate(column.key) as cellTemplate; else defaultCell">
             <ng-container
@@ -41,4 +41,24 @@
       </tr>
     </tbody>
   </table>
+
+  <div class="data-table__pagination" *ngIf="!loading && !errorMessage && showPagination">
+    <button
+      type="button"
+      class="data-table__page-button"
+      [disabled]="currentPage === 1"
+      (click)="goToPage(currentPage - 1)"
+    >
+      ‹ Önceki
+    </button>
+    <span class="data-table__page-info">Sayfa {{ currentPage }} / {{ totalPages }}</span>
+    <button
+      type="button"
+      class="data-table__page-button"
+      [disabled]="currentPage === totalPages"
+      (click)="goToPage(currentPage + 1)"
+    >
+      Sonraki ›
+    </button>
+  </div>
 </div>
