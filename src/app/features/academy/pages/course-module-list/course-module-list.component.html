@@ -1,6 +1,7 @@
 <div class="page">
   <div class="page__header">
     <h1>Modüller</h1>
+    <button type="button" class="page__new-button" (click)="openCreateDialog()">+ Yeni Modül</button>
   </div>
 
   <app-data-table
@@ -14,5 +15,22 @@
     <ng-template dtCell="courseId" let-value>
       {{ courseTitle(value) }}
     </ng-template>
+
+    <ng-template dtCell="actions" let-row="row">
+      <button type="button" class="link-button" (click)="openEditDialog(row)">Düzenle</button>
+    </ng-template>
   </app-data-table>
 </div>
+
+<app-dialog
+  [open]="dialogOpen"
+  [title]="editingModule ? 'Modülü Düzenle' : 'Yeni Modül'"
+  (closed)="onDialogClosed()"
+>
+  <app-course-module-form
+    [courseModule]="editingModule"
+    [courses]="courses"
+    (saved)="onSaved()"
+    (cancelled)="onDialogClosed()"
+  ></app-course-module-form>
+</app-dialog>
