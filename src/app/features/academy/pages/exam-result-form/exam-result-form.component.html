@@ -1,0 +1,65 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="exam-result-form">
+  <app-form-field
+    label="Sınav"
+    [control]="form.get('examId')"
+    [errorMessages]="{ required: 'Sınav seçimi zorunludur.' }"
+  >
+    <select formControlName="examId">
+      <option value="" disabled>Seçiniz</option>
+      <option *ngFor="let exam of exams" [value]="exam.id">{{ exam.title }}</option>
+    </select>
+  </app-form-field>
+
+  <app-form-field
+    label="Katılımcı"
+    [control]="form.get('participantId')"
+    [errorMessages]="{ required: 'Katılımcı seçimi zorunludur.' }"
+  >
+    <select formControlName="participantId">
+      <option value="" disabled>Seçiniz</option>
+      <option *ngFor="let participant of participants" [value]="participant.id">{{ participant.fullName }}</option>
+    </select>
+  </app-form-field>
+
+  <app-form-field
+    label="Toplam Soru Sayısı"
+    [control]="form.get('totalQuestionCount')"
+    [errorMessages]="{ required: 'Toplam soru sayısı zorunludur.', min: 'Toplam soru sayısı en az 1 olmalıdır.' }"
+  >
+    <input type="number" formControlName="totalQuestionCount" />
+  </app-form-field>
+
+  <div class="exam-result-form__row">
+    <app-form-field
+      label="Doğru Sayısı"
+      [control]="form.get('correctCount')"
+      [errorMessages]="{ required: 'Doğru sayısı zorunludur.', min: 'Doğru sayısı negatif olamaz.' }"
+    >
+      <input type="number" formControlName="correctCount" />
+    </app-form-field>
+
+    <app-form-field
+      label="Yanlış Sayısı"
+      [control]="form.get('wrongCount')"
+      [errorMessages]="{ required: 'Yanlış sayısı zorunludur.', min: 'Yanlış sayısı negatif olamaz.' }"
+    >
+      <input type="number" formControlName="wrongCount" />
+    </app-form-field>
+  </div>
+
+  <p
+    class="exam-result-form__form-error"
+    *ngIf="form.errors?.['countsExceedTotal'] && (form.get('correctCount')?.touched || form.get('wrongCount')?.touched)"
+  >
+    Doğru + yanlış sayısı, toplam soru sayısını aşamaz.
+  </p>
+
+  <p class="exam-result-form__form-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <div class="exam-result-form__actions">
+    <button type="button" class="exam-result-form__cancel" (click)="cancel()">İptal</button>
+    <button type="submit" class="exam-result-form__submit" [disabled]="submitting">
+      {{ submitting ? 'Kaydediliyor...' : 'Oluştur' }}
+    </button>
+  </div>
+</form>

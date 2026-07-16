@@ -3,27 +3,44 @@ import { CommonModule } from '@angular/common';
 import { ExamResultService } from '../../services/exam-result.service';
 import { ExamService } from '../../services/exam.service';
 import { ParticipantService } from '../../services/participant.service';
+import { CourseService } from '../../services/course.service';
 import { ExamResult } from '../../models/exam-result.model';
+import { Exam } from '../../models/exam.model';
+import { Participant } from '../../models/participant.model';
+import { Course } from '../../models/course.model';
 import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
+import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
+import { ExamResultFormComponent } from '../exam-result-form/exam-result-form.component';
 
 /**
  * Sınav sonuçları listesi ekranı (/sonuclar).
- * Doğru/yanlış/net ve başarı durumu ExamResultService tarafından zaten
- * hesaplanmış olarak gelir; bu ekran sadece görüntüler.
+ * Yeni sonuç kaydetme, reusable Dialog + ExamResultForm bileşenleri ile
+ * modal içinde yapılır. Düzenleme desteklenmez (bkz. ExamResultFormComponent).
  */
 @Component({
   selector: 'app-exam-result-list',
   standalone: true,
-  imports: [CommonModule, DataTableComponent, DataTableCellDirective],
+  imports: [
+    CommonModule,
+    DataTableComponent,
+    DataTableCellDirective,
+    DialogComponent,
+    ExamResultFormComponent,
+  ],
   templateUrl: './exam-result-list.component.html',
   styleUrl: './exam-result-list.component.scss',
 })
 export class ExamResultListComponent implements OnInit {
   results: ExamResult[] = [];
+  exams: Exam[] = [];
+  participants: Participant[] = [];
+  courses: Course[] = [];
   errorMessage: string | null = null;
   examTitleById = new Map<string, string>();
   participantNameById = new Map<string, string>();
+
+  dialogOpen = false;
 
   readonly loading = this.examResultService.loading;
 
@@ -39,7 +56,8 @@ export class ExamResultListComponent implements OnInit {
   constructor(
     private examResultService: ExamResultService,
     private examService: ExamService,
-    private participantService: ParticipantService
+    private participantService: ParticipantService,
+    private courseService: CourseService
   ) {}
 
   ngOnInit(): void {
@@ -51,14 +69,20 @@ export class ExamResultListComponent implements OnInit {
 
     this.examService.getAll().subscribe({
       next: (exams) => {
+        this.exams = exams;
         this.examTitleById = new Map(exams.map((e) => [e.id, e.title]));
       },
     });
 
     this.participantService.getAll().subscribe({
       next: (participants) => {
+        this.participants = participants;
         this.participantNameById = new Map(participants.map((p) => [p.id, p.fullName]));
       },
+    });
+
+    this.courseService.getAll().subscribe({
+      next: (courses) => (this.courses = courses),
     });
 
     this.examResultService.getAll().subscribe({
@@ -73,5 +97,18 @@ export class ExamResultListComponent implements OnInit {
 
   participantName(participantId: string): string {
     return this.participantNameById.get(participantId) ?? participantId;
+  }
+
+  openCreateDialog(): void {
+    this.dialogOpen = true;
+  }
+
+  onSaved(): void {
+    this.dialogOpen = false;
+    this.load();
+  }
+
+  onDialogClosed(): void {
+    this.dialogOpen = false;
   }
 }

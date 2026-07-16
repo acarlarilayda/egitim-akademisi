@@ -10,6 +10,21 @@
   }
 }
 
+.page__new-button {
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.page__new-button:hover {
+  background-color: var(--color-primary-hover);
+}
+
 .status-badge {
   display: inline-block;
   padding: 2px var(--space-sm);

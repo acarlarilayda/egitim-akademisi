@@ -1,6 +1,7 @@
 <div class="page">
   <div class="page__header">
     <h1>Sonuçlar</h1>
+    <button type="button" class="page__new-button" (click)="openCreateDialog()">+ Sonuç Kaydet</button>
   </div>
 
   <app-data-table
@@ -26,3 +27,13 @@
     </ng-template>
   </app-data-table>
 </div>
+
+<app-dialog [open]="dialogOpen" title="Sonuç Kaydet" (closed)="onDialogClosed()">
+  <app-exam-result-form
+    [exams]="exams"
+    [participants]="participants"
+    [courses]="courses"
+    (saved)="onSaved()"
+    (cancelled)="onDialogClosed()"
+  ></app-exam-result-form>
+</app-dialog>
