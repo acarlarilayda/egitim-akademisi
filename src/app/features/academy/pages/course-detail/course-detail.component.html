@@ -68,6 +68,7 @@
             <th>Katılımcı</th>
             <th>Durum</th>
             <th>Kayıt Tarihi</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -75,6 +76,11 @@
             <td>{{ row.participantName }}</td>
             <td><span class="status-badge" [attr.data-status]="row.status">{{ row.status }}</span></td>
             <td>{{ row.enrolledAt | date: 'dd.MM.yyyy' }}</td>
+            <td>
+              <button type="button" class="link-button" (click)="openAttendanceDialog(row.participantId)">
+                Katılım İşle
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -103,3 +109,14 @@
     </div>
   </ng-container>
 </div>
+
+<app-dialog [open]="attendanceDialogOpen" title="Katılım İşle" (closed)="onAttendanceDialogClosed()">
+  <app-attendance-mark-form
+    *ngIf="attendanceParticipantId"
+    [courseId]="course?.id ?? ''"
+    [participantId]="attendanceParticipantId"
+    [lessons]="lessons"
+    (saved)="onAttendanceSaved()"
+    (cancelled)="onAttendanceDialogClosed()"
+  ></app-attendance-mark-form>
+</app-dialog>

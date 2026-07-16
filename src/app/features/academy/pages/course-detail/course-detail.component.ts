@@ -3,15 +3,17 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { CourseService } from '../../services/course.service';
-import { CourseModuleService } from '../../services/course-module.service';
+import { CourseModuleService, LessonService } from '../../services/course-module.service';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { ParticipantService } from '../../services/participant.service';
 import { ExamService } from '../../services/exam.service';
 import { ExamResultService } from '../../services/exam-result.service';
 import { Course } from '../../models/course.model';
-import { CourseModule } from '../../models/course-module.model';
+import { CourseModule, Lesson } from '../../models/course-module.model';
 import { Enrollment } from '../../models/enrollment.model';
 import { ExamResult } from '../../models/exam-result.model';
+import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
+import { AttendanceMarkFormComponent } from '../attendance-mark-form/attendance-mark-form.component';
 
 type DetailTab = 'modules' | 'participants' | 'results';
 
@@ -28,17 +30,20 @@ interface ExamResultRow extends ExamResult {
  * Kurs detay ekranı (/kurslar/:id).
  * Modüller, katılımcılar (enrollment) ve sonuçlar (exam results) sekmeli
  * yapıda gösterilir (bkz. dokümanın 11. bölümü, kabul kriterleri).
+ * Katılımcılar sekmesinde her satır için "Katılım İşle" aksiyonu, dokümanın
+ * 5. bölümündeki "Katılım takibi" oluşturma akışını karşılar.
  */
 @Component({
   selector: 'app-course-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, DialogComponent, AttendanceMarkFormComponent],
   templateUrl: './course-detail.component.html',
   styleUrl: './course-detail.component.scss',
 })
 export class CourseDetailComponent implements OnInit {
   course: Course | null = null;
   modules: CourseModule[] = [];
+  lessons: Lesson[] = [];
   enrollmentRows: EnrollmentRow[] = [];
   examResultRows: ExamResultRow[] = [];
 
@@ -46,12 +51,16 @@ export class CourseDetailComponent implements OnInit {
   errorMessage: string | null = null;
   activeTab: DetailTab = 'modules';
 
+  attendanceDialogOpen = false;
+  attendanceParticipantId: string | null = null;
+
   private courseId!: string;
 
   constructor(
     private route: ActivatedRoute,
     private courseService: CourseService,
     private courseModuleService: CourseModuleService,
+    private lessonService: LessonService,
     private enrollmentService: EnrollmentService,
     private participantService: ParticipantService,
     private examService: ExamService,
@@ -78,8 +87,9 @@ export class CourseDetailComponent implements OnInit {
       participants: this.participantService.getAll(),
       exams: this.examService.getByCourseId(this.courseId),
       examResults: this.examResultService.getAll(),
+      lessons: this.lessonService.getAll(),
     }).subscribe({
-      next: ({ course, modules, enrollments, participants, exams, examResults }) => {
+      next: ({ course, modules, enrollments, participants, exams, examResults, lessons }) => {
         if (!course) {
           this.errorMessage = 'Kurs bulunamadı.';
           this.loading = false;
@@ -89,9 +99,11 @@ export class CourseDetailComponent implements OnInit {
         const participantNameById = new Map(participants.map((p) => [p.id, p.fullName]));
         const examTitleById = new Map(exams.map((e) => [e.id, e.title]));
         const courseExamIds = new Set(exams.map((e) => e.id));
+        const moduleIds = new Set(modules.map((m) => m.id));
 
         this.course = course;
         this.modules = modules;
+        this.lessons = lessons.filter((l) => moduleIds.has(l.moduleId));
 
         this.enrollmentRows = enrollments
           .filter((e) => e.courseId === this.courseId)
@@ -112,5 +124,20 @@ export class CourseDetailComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  openAttendanceDialog(participantId: string): void {
+    this.attendanceParticipantId = participantId;
+    this.attendanceDialogOpen = true;
+  }
+
+  onAttendanceSaved(): void {
+    this.attendanceDialogOpen = false;
+    this.attendanceParticipantId = null;
+  }
+
+  onAttendanceDialogClosed(): void {
+    this.attendanceDialogOpen = false;
+    this.attendanceParticipantId = null;
   }
 }

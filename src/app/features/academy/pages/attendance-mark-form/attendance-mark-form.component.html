@@ -1,0 +1,34 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="attendance-mark-form">
+  <app-form-field
+    label="Ders"
+    [control]="form.get('lessonId')"
+    [errorMessages]="{ required: 'Ders seçimi zorunludur.' }"
+  >
+    <select formControlName="lessonId">
+      <option value="" disabled>Seçiniz</option>
+      <option *ngFor="let lesson of lessons" [value]="lesson.id">{{ lesson.title }}</option>
+    </select>
+  </app-form-field>
+
+  <app-form-field
+    label="Tarih"
+    [control]="form.get('date')"
+    [errorMessages]="{ required: 'Tarih zorunludur.' }"
+  >
+    <input type="date" formControlName="date" />
+  </app-form-field>
+
+  <label class="attendance-mark-form__checkbox">
+    <input type="checkbox" formControlName="attended" />
+    Katıldı
+  </label>
+
+  <p class="attendance-mark-form__form-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <div class="attendance-mark-form__actions">
+    <button type="button" class="attendance-mark-form__cancel" (click)="cancel()">İptal</button>
+    <button type="submit" class="attendance-mark-form__submit" [disabled]="submitting">
+      {{ submitting ? 'Kaydediliyor...' : 'Kaydet' }}
+    </button>
+  </div>
+</form>
