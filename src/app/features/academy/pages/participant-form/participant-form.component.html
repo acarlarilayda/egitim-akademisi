@@ -1,0 +1,34 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="participant-form">
+  <app-form-field
+    label="Ad Soyad"
+    [control]="form.get('fullName')"
+    [errorMessages]="{ required: 'Ad soyad zorunludur.', whitespace: 'Ad soyad sadece boşluk olamaz.' }"
+  >
+    <input type="text" formControlName="fullName" />
+  </app-form-field>
+
+  <app-form-field
+    label="E-posta"
+    [control]="form.get('email')"
+    [errorMessages]="{ required: 'E-posta zorunludur.', email: 'Geçerli bir e-posta adresi girin.' }"
+  >
+    <input type="email" formControlName="email" />
+  </app-form-field>
+
+  <app-form-field
+    label="Telefon"
+    [control]="form.get('phone')"
+    [errorMessages]="{ required: 'Telefon zorunludur.', pattern: 'Geçerli bir telefon numarası girin.' }"
+  >
+    <input type="tel" formControlName="phone" />
+  </app-form-field>
+
+  <p class="participant-form__form-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <div class="participant-form__actions">
+    <button type="button" class="participant-form__cancel" (click)="cancel()">İptal</button>
+    <button type="submit" class="participant-form__submit" [disabled]="submitting">
+      {{ submitting ? 'Kaydediliyor...' : (isEditMode ? 'Güncelle' : 'Oluştur') }}
+    </button>
+  </div>
+</form>
