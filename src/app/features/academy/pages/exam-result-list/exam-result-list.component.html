@@ -4,12 +4,29 @@
     <button type="button" class="page__new-button" (click)="openCreateDialog()">+ Sonuç Kaydet</button>
   </div>
 
+  <div class="page__filters">
+    <input
+      type="text"
+      class="page__search"
+      placeholder="Katılımcı adına göre ara..."
+      appDebounceInput
+      [debounceMs]="300"
+      (debouncedInput)="onSearchChange($event)"
+    />
+
+    <select class="page__status-filter" [(ngModel)]="resultFilter">
+      <option value="">Tüm Sonuçlar</option>
+      <option value="gecti">Geçti</option>
+      <option value="kaldi">Kaldı</option>
+    </select>
+  </div>
+
   <app-data-table
     [columns]="columns"
-    [rows]="results"
+    [rows]="filteredResults"
     [loading]="loading()"
     [errorMessage]="errorMessage"
-    emptyMessage="Henüz kayıtlı sınav sonucu yok."
+    emptyMessage="Arama/filtre kriterlerine uyan sınav sonucu bulunamadı."
     (retry)="load()"
   >
     <ng-template dtCell="participantId" let-value>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ExamService } from '../../services/exam.service';
 import { CourseService } from '../../services/course.service';
 import { Exam } from '../../models/exam.model';
@@ -8,16 +9,20 @@ import { DataTableComponent, TableColumn } from '../../../../shared/components/d
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 import { ExamFormComponent } from '../exam-form/exam-form.component';
+import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 
-/**
- * Sınav listesi ekranı (/sinavlar).
- * Yeni sınav oluşturma ve düzenleme, reusable Dialog + ExamForm
- * bileşenleri ile modal içinde yapılır.
- */
 @Component({
   selector: 'app-exam-list',
   standalone: true,
-  imports: [CommonModule, DataTableComponent, DataTableCellDirective, DialogComponent, ExamFormComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    DataTableComponent,
+    DataTableCellDirective,
+    DialogComponent,
+    ExamFormComponent,
+    DebounceDirective,
+  ],
   templateUrl: './exam-list.component.html',
   styleUrl: './exam-list.component.scss',
 })
@@ -26,6 +31,9 @@ export class ExamListComponent implements OnInit {
   courses: Course[] = [];
   errorMessage: string | null = null;
   courseTitleById = new Map<string, string>();
+
+  searchTerm = '';
+  courseFilter = '';
 
   dialogOpen = false;
   editingExam: Exam | null = null;
@@ -66,6 +74,20 @@ export class ExamListComponent implements OnInit {
 
   courseTitle(courseId: string): string {
     return this.courseTitleById.get(courseId) ?? courseId;
+  }
+
+  get filteredExams(): Exam[] {
+    const term = this.searchTerm.trim().toLowerCase();
+
+    return this.exams.filter((exam) => {
+      const matchesSearch = !term || exam.title.toLowerCase().includes(term);
+      const matchesCourse = !this.courseFilter || exam.courseId === this.courseFilter;
+      return matchesSearch && matchesCourse;
+    });
+  }
+
+  onSearchChange(value: string): void {
+    this.searchTerm = value;
   }
 
   openCreateDialog(): void {

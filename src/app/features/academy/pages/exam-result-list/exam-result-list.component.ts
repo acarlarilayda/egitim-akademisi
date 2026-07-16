@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ExamResultService } from '../../services/exam-result.service';
 import { ExamService } from '../../services/exam.service';
 import { ParticipantService } from '../../services/participant.service';
@@ -12,21 +13,19 @@ import { DataTableComponent, TableColumn } from '../../../../shared/components/d
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 import { ExamResultFormComponent } from '../exam-result-form/exam-result-form.component';
+import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 
-/**
- * Sınav sonuçları listesi ekranı (/sonuclar).
- * Yeni sonuç kaydetme, reusable Dialog + ExamResultForm bileşenleri ile
- * modal içinde yapılır. Düzenleme desteklenmez (bkz. ExamResultFormComponent).
- */
 @Component({
   selector: 'app-exam-result-list',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     DataTableComponent,
     DataTableCellDirective,
     DialogComponent,
     ExamResultFormComponent,
+    DebounceDirective,
   ],
   templateUrl: './exam-result-list.component.html',
   styleUrl: './exam-result-list.component.scss',
@@ -39,6 +38,9 @@ export class ExamResultListComponent implements OnInit {
   errorMessage: string | null = null;
   examTitleById = new Map<string, string>();
   participantNameById = new Map<string, string>();
+
+  searchTerm = '';
+  resultFilter = '';
 
   dialogOpen = false;
 
@@ -97,6 +99,24 @@ export class ExamResultListComponent implements OnInit {
 
   participantName(participantId: string): string {
     return this.participantNameById.get(participantId) ?? participantId;
+  }
+
+  get filteredResults(): ExamResult[] {
+    const term = this.searchTerm.trim().toLowerCase();
+
+    return this.results.filter((result) => {
+      const name = this.participantName(result.participantId).toLowerCase();
+      const matchesSearch = !term || name.includes(term);
+      const matchesResult =
+        !this.resultFilter ||
+        (this.resultFilter === 'gecti' && result.isPassed) ||
+        (this.resultFilter === 'kaldi' && !result.isPassed);
+      return matchesSearch && matchesResult;
+    });
+  }
+
+  onSearchChange(value: string): void {
+    this.searchTerm = value;
   }
 
   openCreateDialog(): void {
