@@ -4,12 +4,29 @@
     <button type="button" class="page__new-button" (click)="openCreateDialog()">+ Yeni Katılımcı</button>
   </div>
 
+  <div class="page__filters">
+    <input
+      type="text"
+      class="page__search"
+      placeholder="Ad veya e-postaya göre ara..."
+      appDebounceInput
+      [debounceMs]="300"
+      (debouncedInput)="onSearchChange($event)"
+    />
+
+    <select class="page__status-filter" [(ngModel)]="statusFilter">
+      <option value="">Tüm Durumlar</option>
+      <option value="aktif">Aktif</option>
+      <option value="pasif">Pasif</option>
+    </select>
+  </div>
+
   <app-data-table
     [columns]="columns"
-    [rows]="participants"
+    [rows]="filteredParticipants"
     [loading]="loading()"
     [errorMessage]="errorMessage"
-    emptyMessage="Henüz kayıtlı katılımcı yok."
+    emptyMessage="Arama/filtre kriterlerine uyan katılımcı bulunamadı."
     (retry)="load()"
   >
     <ng-template dtCell="isActive" let-value>

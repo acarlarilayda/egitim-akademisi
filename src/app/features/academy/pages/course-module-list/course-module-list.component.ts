@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CourseModuleService } from '../../services/course-module.service';
 import { CourseService } from '../../services/course.service';
 import { CourseModule } from '../../models/course-module.model';
@@ -8,21 +9,19 @@ import { DataTableComponent, TableColumn } from '../../../../shared/components/d
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 import { CourseModuleFormComponent } from '../course-module-form/course-module-form.component';
+import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 
-/**
- * Modül listesi ekranı (/moduller).
- * Yeni modül oluşturma ve düzenleme, reusable Dialog + CourseModuleForm
- * bileşenleri ile modal içinde yapılır.
- */
 @Component({
   selector: 'app-course-module-list',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     DataTableComponent,
     DataTableCellDirective,
     DialogComponent,
     CourseModuleFormComponent,
+    DebounceDirective,
   ],
   templateUrl: './course-module-list.component.html',
   styleUrl: './course-module-list.component.scss',
@@ -32,6 +31,9 @@ export class CourseModuleListComponent implements OnInit {
   courses: Course[] = [];
   errorMessage: string | null = null;
   courseTitleById = new Map<string, string>();
+
+  searchTerm = '';
+  courseFilter = '';
 
   dialogOpen = false;
   editingModule: CourseModule | null = null;
@@ -72,6 +74,20 @@ export class CourseModuleListComponent implements OnInit {
 
   courseTitle(courseId: string): string {
     return this.courseTitleById.get(courseId) ?? courseId;
+  }
+
+  get filteredModules(): CourseModule[] {
+    const term = this.searchTerm.trim().toLowerCase();
+
+    return this.modules.filter((module) => {
+      const matchesSearch = !term || module.title.toLowerCase().includes(term);
+      const matchesCourse = !this.courseFilter || module.courseId === this.courseFilter;
+      return matchesSearch && matchesCourse;
+    });
+  }
+
+  onSearchChange(value: string): void {
+    this.searchTerm = value;
   }
 
   openCreateDialog(): void {

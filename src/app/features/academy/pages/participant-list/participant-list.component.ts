@@ -1,26 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ParticipantService } from '../../services/participant.service';
 import { Participant } from '../../models/participant.model';
 import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 import { ParticipantFormComponent } from '../participant-form/participant-form.component';
+import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 
-/**
- * Katılımcı listesi ekranı (/katilimcilar).
- * Yeni katılımcı oluşturma ve düzenleme, reusable Dialog + ParticipantForm
- * bileşenleri ile modal içinde yapılır (bkz. CourseListComponent ile aynı desen).
- */
 @Component({
   selector: 'app-participant-list',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     DataTableComponent,
     DataTableCellDirective,
     DialogComponent,
     ParticipantFormComponent,
+    DebounceDirective,
   ],
   templateUrl: './participant-list.component.html',
   styleUrl: './participant-list.component.scss',
@@ -28,6 +27,9 @@ import { ParticipantFormComponent } from '../participant-form/participant-form.c
 export class ParticipantListComponent implements OnInit {
   participants: Participant[] = [];
   errorMessage: string | null = null;
+
+  searchTerm = '';
+  statusFilter = '';
 
   dialogOpen = false;
   editingParticipant: Participant | null = null;
@@ -54,6 +56,26 @@ export class ParticipantListComponent implements OnInit {
       next: (participants) => (this.participants = participants),
       error: (err) => (this.errorMessage = err?.message ?? 'Katılımcılar yüklenirken bir hata oluştu.'),
     });
+  }
+
+  get filteredParticipants(): Participant[] {
+    const term = this.searchTerm.trim().toLowerCase();
+
+    return this.participants.filter((participant) => {
+      const matchesSearch =
+        !term ||
+        participant.fullName.toLowerCase().includes(term) ||
+        participant.email.toLowerCase().includes(term);
+      const matchesStatus =
+        !this.statusFilter ||
+        (this.statusFilter === 'aktif' && participant.isActive) ||
+        (this.statusFilter === 'pasif' && !participant.isActive);
+      return matchesSearch && matchesStatus;
+    });
+  }
+
+  onSearchChange(value: string): void {
+    this.searchTerm = value;
   }
 
   openCreateDialog(): void {
