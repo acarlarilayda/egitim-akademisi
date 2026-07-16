@@ -1,0 +1,43 @@
+.certificate-evaluate-form__hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-md);
+}
+
+.certificate-evaluate-form__form-error {
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  margin: 0 0 var(--space-md);
+}
+
+.certificate-evaluate-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.certificate-evaluate-form__cancel {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background-color: var(--color-surface);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+}
+
+.certificate-evaluate-form__submit {
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  border-radius: 6px;
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.certificate-evaluate-form__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

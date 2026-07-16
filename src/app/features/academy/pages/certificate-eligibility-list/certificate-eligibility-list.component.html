@@ -1,6 +1,7 @@
 <div class="page">
   <div class="page__header">
     <h1>Sertifikalar</h1>
+    <button type="button" class="page__new-button" (click)="openEvaluateDialog()">+ Değerlendir</button>
   </div>
 
   <app-data-table
@@ -43,3 +44,12 @@
     </ng-template>
   </app-data-table>
 </div>
+
+<app-dialog [open]="dialogOpen" title="Sertifika Uygunluğu Değerlendir" (closed)="onDialogClosed()">
+  <app-certificate-evaluate-form
+    [courses]="courses"
+    [participants]="participants"
+    (saved)="onSaved()"
+    (cancelled)="onDialogClosed()"
+  ></app-certificate-evaluate-form>
+</app-dialog>

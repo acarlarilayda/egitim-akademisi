@@ -4,26 +4,42 @@ import { CertificateEligibilityService } from '../../services/certificate-eligib
 import { CourseService } from '../../services/course.service';
 import { ParticipantService } from '../../services/participant.service';
 import { CertificateEligibility } from '../../models/certificate-eligibility.model';
+import { Course } from '../../models/course.model';
+import { Participant } from '../../models/participant.model';
 import { CertificateEligibilityStatus } from '../../../../core/models/enums';
 import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
+import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
+import { CertificateEvaluateFormComponent } from '../certificate-evaluate-form/certificate-evaluate-form.component';
 
 /**
  * Sertifika uygunluğu listesi ekranı (/sertifikalar).
- * "Eligible" durumundaki kayıtlar için sertifika verme aksiyonu sunar.
+ * "Değerlendir" aksiyonu, katılım oranı ve sınav başarı durumunu otomatik
+ * hesaplayıp uygunluk kaydı oluşturur/günceller (bkz. dokümanın 11. bölümü).
+ * "Eligible" durumundaki kayıtlar için ayrıca sertifika verme aksiyonu sunar.
  */
 @Component({
   selector: 'app-certificate-eligibility-list',
   standalone: true,
-  imports: [CommonModule, DataTableComponent, DataTableCellDirective],
+  imports: [
+    CommonModule,
+    DataTableComponent,
+    DataTableCellDirective,
+    DialogComponent,
+    CertificateEvaluateFormComponent,
+  ],
   templateUrl: './certificate-eligibility-list.component.html',
   styleUrl: './certificate-eligibility-list.component.scss',
 })
 export class CertificateEligibilityListComponent implements OnInit {
   eligibilities: CertificateEligibility[] = [];
+  courses: Course[] = [];
+  participants: Participant[] = [];
   errorMessage: string | null = null;
   courseTitleById = new Map<string, string>();
   participantNameById = new Map<string, string>();
+
+  dialogOpen = false;
 
   readonly loading = this.certificateEligibilityService.loading;
   readonly Status = CertificateEligibilityStatus;
@@ -52,12 +68,14 @@ export class CertificateEligibilityListComponent implements OnInit {
 
     this.courseService.getAll().subscribe({
       next: (courses) => {
+        this.courses = courses;
         this.courseTitleById = new Map(courses.map((c) => [c.id, c.title]));
       },
     });
 
     this.participantService.getAll().subscribe({
       next: (participants) => {
+        this.participants = participants;
         this.participantNameById = new Map(participants.map((p) => [p.id, p.fullName]));
       },
     });
@@ -74,6 +92,19 @@ export class CertificateEligibilityListComponent implements OnInit {
 
   participantName(participantId: string): string {
     return this.participantNameById.get(participantId) ?? participantId;
+  }
+
+  openEvaluateDialog(): void {
+    this.dialogOpen = true;
+  }
+
+  onSaved(): void {
+    this.dialogOpen = false;
+    this.load();
+  }
+
+  onDialogClosed(): void {
+    this.dialogOpen = false;
   }
 
   issueCertificate(id: string): void {
