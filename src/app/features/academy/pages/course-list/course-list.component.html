@@ -4,12 +4,28 @@
     <button type="button" class="page__new-button" (click)="openCreateDialog()">+ Yeni Kurs</button>
   </div>
 
+  <div class="page__filters">
+    <input
+      type="text"
+      class="page__search"
+      placeholder="Kurs adına göre ara..."
+      appDebounceInput
+      [debounceMs]="300"
+      (debouncedInput)="onSearchChange($event)"
+    />
+
+    <select class="page__status-filter" [(ngModel)]="statusFilter">
+      <option value="">Tüm Durumlar</option>
+      <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+    </select>
+  </div>
+
   <app-data-table
     [columns]="columns"
-    [rows]="courses"
+    [rows]="filteredCourses"
     [loading]="loading()"
     [errorMessage]="errorMessage"
-    emptyMessage="Henüz kayıtlı kurs yok."
+    emptyMessage="Arama/filtre kriterlerine uyan kurs bulunamadı."
     (retry)="load()"
   >
     <ng-template dtCell="status" let-value>

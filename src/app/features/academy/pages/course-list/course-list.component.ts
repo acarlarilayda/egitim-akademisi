@@ -1,30 +1,37 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CourseService } from '../../services/course.service';
 import { InstructorService } from '../../services/instructor.service';
 import { Course } from '../../models/course.model';
 import { Instructor } from '../../models/instructor.model';
+import { CourseStatus } from '../../../../core/models/enums';
 import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 import { CourseFormComponent } from '../course-form/course-form.component';
+import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 
 /**
  * Kurs listesi ekranı (/kurslar).
- * Yeni kurs oluşturma ve düzenleme, ayrı bir route yerine reusable
- * Dialog + CourseForm bileşenleri ile modal içinde yapılır.
+ * Yeni kurs oluşturma ve düzenleme, reusable Dialog + CourseForm bileşenleri
+ * ile modal içinde yapılır. Arama (debounce'lu) ve durum filtresi,
+ * DataTableComponent'e ulaşmadan önce `filteredCourses` getter'ında
+ * uygulanır; sıralama ve pagination DataTableComponent içinde yönetilir.
  */
 @Component({
   selector: 'app-course-list',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterLink,
     DataTableComponent,
     DataTableCellDirective,
     DialogComponent,
     CourseFormComponent,
+    DebounceDirective,
   ],
   templateUrl: './course-list.component.html',
   styleUrl: './course-list.component.scss',
@@ -33,6 +40,10 @@ export class CourseListComponent implements OnInit {
   courses: Course[] = [];
   instructors: Instructor[] = [];
   errorMessage: string | null = null;
+
+  searchTerm = '';
+  statusFilter = '';
+  readonly statusOptions = Object.values(CourseStatus);
 
   dialogOpen = false;
   editingCourse: Course | null = null;
@@ -65,6 +76,21 @@ export class CourseListComponent implements OnInit {
       next: (courses) => (this.courses = courses),
       error: (err) => (this.errorMessage = err?.message ?? 'Kurslar yüklenirken bir hata oluştu.'),
     });
+  }
+
+  /** Arama (kurs adında) ve durum filtresi uygulanmış kurs listesi. */
+  get filteredCourses(): Course[] {
+    const term = this.searchTerm.trim().toLowerCase();
+
+    return this.courses.filter((course) => {
+      const matchesSearch = !term || course.title.toLowerCase().includes(term);
+      const matchesStatus = !this.statusFilter || course.status === this.statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }
+
+  onSearchChange(value: string): void {
+    this.searchTerm = value;
   }
 
   openCreateDialog(): void {
