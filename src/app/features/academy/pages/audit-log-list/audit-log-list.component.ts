@@ -1,26 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AuditLogService } from '../../../../core/services/audit-log.service';
 import { AuditLogEntry } from '../../../../core/models/audit-log-entry.model';
 import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
+import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 
-/**
- * Audit Log listesi ekranı (/audit-log).
- * İşlem tipi, zamanı, yapan rol ve açıklamayı gösterir (bkz. dokümanın
- * 5. bölümü: "Log kaydında işlem tipi, işlem zamanı, işlem yapan rol,
- * açıklama ve varsa eski/yeni değer bulunmalıdır").
- */
 @Component({
   selector: 'app-audit-log-list',
   standalone: true,
-  imports: [CommonModule, DataTableComponent, DataTableCellDirective],
+  imports: [CommonModule, FormsModule, DataTableComponent, DataTableCellDirective, DebounceDirective],
   templateUrl: './audit-log-list.component.html',
   styleUrl: './audit-log-list.component.scss',
 })
 export class AuditLogListComponent implements OnInit {
   entries: AuditLogEntry[] = [];
   errorMessage: string | null = null;
+
+  searchTerm = '';
+  entityTypeFilter = '';
 
   readonly loading = this.auditLogService.loading;
 
@@ -44,5 +43,26 @@ export class AuditLogListComponent implements OnInit {
       next: (entries) => (this.entries = entries),
       error: (err) => (this.errorMessage = err?.message ?? 'Audit log yüklenirken bir hata oluştu.'),
     });
+  }
+
+  get entityTypeOptions(): string[] {
+    return [...new Set(this.entries.map((entry) => entry.entityType))];
+  }
+
+  get filteredEntries(): AuditLogEntry[] {
+    const term = this.searchTerm.trim().toLowerCase();
+
+    return this.entries.filter((entry) => {
+      const matchesSearch =
+        !term ||
+        entry.description.toLowerCase().includes(term) ||
+        entry.action.toLowerCase().includes(term);
+      const matchesEntityType = !this.entityTypeFilter || entry.entityType === this.entityTypeFilter;
+      return matchesSearch && matchesEntityType;
+    });
+  }
+
+  onSearchChange(value: string): void {
+    this.searchTerm = value;
   }
 }

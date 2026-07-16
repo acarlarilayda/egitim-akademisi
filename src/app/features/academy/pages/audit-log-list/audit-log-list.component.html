@@ -3,12 +3,28 @@
     <h1>Audit Log</h1>
   </div>
 
+  <div class="page__filters">
+    <input
+      type="text"
+      class="page__search"
+      placeholder="Açıklama veya işleme göre ara..."
+      appDebounceInput
+      [debounceMs]="300"
+      (debouncedInput)="onSearchChange($event)"
+    />
+
+    <select class="page__status-filter" [(ngModel)]="entityTypeFilter">
+      <option value="">Tüm Varlıklar</option>
+      <option *ngFor="let entityType of entityTypeOptions" [value]="entityType">{{ entityType }}</option>
+    </select>
+  </div>
+
   <app-data-table
     [columns]="columns"
-    [rows]="entries"
+    [rows]="filteredEntries"
     [loading]="loading()"
     [errorMessage]="errorMessage"
-    emptyMessage="Henüz kayıtlı işlem yok."
+    emptyMessage="Arama/filtre kriterlerine uyan işlem bulunamadı."
     (retry)="load()"
   >
     <ng-template dtCell="createdAt" let-value>

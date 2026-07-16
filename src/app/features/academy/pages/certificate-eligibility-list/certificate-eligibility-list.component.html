@@ -4,12 +4,28 @@
     <button type="button" class="page__new-button" (click)="openEvaluateDialog()">+ Değerlendir</button>
   </div>
 
+  <div class="page__filters">
+    <input
+      type="text"
+      class="page__search"
+      placeholder="Katılımcı adına göre ara..."
+      appDebounceInput
+      [debounceMs]="300"
+      (debouncedInput)="onSearchChange($event)"
+    />
+
+    <select class="page__status-filter" [(ngModel)]="statusFilter">
+      <option value="">Tüm Durumlar</option>
+      <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+    </select>
+  </div>
+
   <app-data-table
     [columns]="columns"
-    [rows]="eligibilities"
+    [rows]="filteredEligibilities"
     [loading]="loading()"
     [errorMessage]="errorMessage"
-    emptyMessage="Henüz sertifika uygunluk kaydı yok."
+    emptyMessage="Arama/filtre kriterlerine uyan sertifika kaydı bulunamadı."
     (retry)="load()"
   >
     <ng-template dtCell="participantId" let-value>

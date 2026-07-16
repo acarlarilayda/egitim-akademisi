@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CertificateEligibilityService } from '../../services/certificate-eligibility.service';
 import { CourseService } from '../../services/course.service';
 import { ParticipantService } from '../../services/participant.service';
@@ -11,22 +12,19 @@ import { DataTableComponent, TableColumn } from '../../../../shared/components/d
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 import { CertificateEvaluateFormComponent } from '../certificate-evaluate-form/certificate-evaluate-form.component';
+import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 
-/**
- * Sertifika uygunluğu listesi ekranı (/sertifikalar).
- * "Değerlendir" aksiyonu, katılım oranı ve sınav başarı durumunu otomatik
- * hesaplayıp uygunluk kaydı oluşturur/günceller (bkz. dokümanın 11. bölümü).
- * "Eligible" durumundaki kayıtlar için ayrıca sertifika verme aksiyonu sunar.
- */
 @Component({
   selector: 'app-certificate-eligibility-list',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     DataTableComponent,
     DataTableCellDirective,
     DialogComponent,
     CertificateEvaluateFormComponent,
+    DebounceDirective,
   ],
   templateUrl: './certificate-eligibility-list.component.html',
   styleUrl: './certificate-eligibility-list.component.scss',
@@ -38,6 +36,10 @@ export class CertificateEligibilityListComponent implements OnInit {
   errorMessage: string | null = null;
   courseTitleById = new Map<string, string>();
   participantNameById = new Map<string, string>();
+
+  searchTerm = '';
+  statusFilter = '';
+  readonly statusOptions = Object.values(CertificateEligibilityStatus);
 
   dialogOpen = false;
 
@@ -92,6 +94,21 @@ export class CertificateEligibilityListComponent implements OnInit {
 
   participantName(participantId: string): string {
     return this.participantNameById.get(participantId) ?? participantId;
+  }
+
+  get filteredEligibilities(): CertificateEligibility[] {
+    const term = this.searchTerm.trim().toLowerCase();
+
+    return this.eligibilities.filter((eligibility) => {
+      const name = this.participantName(eligibility.participantId).toLowerCase();
+      const matchesSearch = !term || name.includes(term);
+      const matchesStatus = !this.statusFilter || eligibility.status === this.statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }
+
+  onSearchChange(value: string): void {
+    this.searchTerm = value;
   }
 
   openEvaluateDialog(): void {
