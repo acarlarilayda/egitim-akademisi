@@ -24,7 +24,7 @@ import { PermissionDirective } from '../../../../shared/directives/permission.di
 @Component({
   selector: 'app-course-list',
   standalone: true,
-imports: [
+  imports: [
     CommonModule,
     FormsModule,
     RouterLink,

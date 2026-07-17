@@ -46,7 +46,7 @@ import { SessionService } from '../../../core/services/session.service';
 
       <nav class="sidebar__nav">
         @for (item of visibleNavItems; track item.route) {
-          
+          <a
             [routerLink]="item.route"
             routerLinkActive="sidebar__link--active"
             class="sidebar__link"

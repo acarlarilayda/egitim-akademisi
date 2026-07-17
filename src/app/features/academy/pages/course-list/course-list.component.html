@@ -39,6 +39,7 @@
     <ng-template dtCell="actions" let-row="row">
       <a [routerLink]="['/kurslar', row.id]">Detay</a>
       <button type="button" class="link-button" *appPermission="manageRoles" (click)="openEditDialog(row)">Düzenle</button>
+    </ng-template>
   </app-data-table>
 </div>
 
