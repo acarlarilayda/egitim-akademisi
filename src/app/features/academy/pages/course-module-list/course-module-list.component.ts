@@ -5,12 +5,17 @@ import { CourseModuleService } from '../../services/course-module.service';
 import { CourseService } from '../../services/course.service';
 import { CourseModule } from '../../models/course-module.model';
 import { Course } from '../../models/course.model';
+import { UserRole } from '../../../../core/models/enums';
 import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 import { CourseModuleFormComponent } from '../course-module-form/course-module-form.component';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
+import { PermissionDirective } from '../../../../shared/directives/permission.directive';
 
+/**
+ * Modül oluşturma/düzenleme yalnızca Eğitim Yöneticisi'ne açıktır.
+ */
 @Component({
   selector: 'app-course-module-list',
   standalone: true,
@@ -22,11 +27,14 @@ import { DebounceDirective } from '../../../../shared/directives/debounce.direct
     DialogComponent,
     CourseModuleFormComponent,
     DebounceDirective,
+    PermissionDirective,
   ],
   templateUrl: './course-module-list.component.html',
   styleUrl: './course-module-list.component.scss',
 })
 export class CourseModuleListComponent implements OnInit {
+  protected readonly manageRoles = [UserRole.EgitimYoneticisi];
+
   modules: CourseModule[] = [];
   courses: Course[] = [];
   errorMessage: string | null = null;

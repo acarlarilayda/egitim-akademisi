@@ -6,12 +6,13 @@ import { CourseService } from '../../services/course.service';
 import { InstructorService } from '../../services/instructor.service';
 import { Course } from '../../models/course.model';
 import { Instructor } from '../../models/instructor.model';
-import { CourseStatus } from '../../../../core/models/enums';
+import { CourseStatus, UserRole } from '../../../../core/models/enums';
 import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 import { CourseFormComponent } from '../course-form/course-form.component';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
+import { PermissionDirective } from '../../../../shared/directives/permission.directive';
 
 /**
  * Kurs listesi ekranı (/kurslar).
@@ -23,7 +24,7 @@ import { DebounceDirective } from '../../../../shared/directives/debounce.direct
 @Component({
   selector: 'app-course-list',
   standalone: true,
-  imports: [
+imports: [
     CommonModule,
     FormsModule,
     RouterLink,
@@ -32,11 +33,15 @@ import { DebounceDirective } from '../../../../shared/directives/debounce.direct
     DialogComponent,
     CourseFormComponent,
     DebounceDirective,
+    PermissionDirective,
   ],
   templateUrl: './course-list.component.html',
   styleUrl: './course-list.component.scss',
 })
 export class CourseListComponent implements OnInit {
+  /** Kurs oluşturma/düzenleme yalnızca Eğitim Yöneticisi'ne açıktır. */
+  protected readonly manageRoles = [UserRole.EgitimYoneticisi];
+
   courses: Course[] = [];
   instructors: Instructor[] = [];
   errorMessage: string | null = null;
