@@ -1,13 +1,35 @@
-import { Component, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NAV_ITEMS } from '../../../core/models/nav-item.model';
+import { SessionService } from '../../../core/services/session.service';
 
+/**
+ * Sidebar.
+ *
+ * İki bağımsız durumu var:
+ * - `collapsed` (masaüstü): daraltılmış/genişletilmiş görünüm, kullanıcının
+ *   kendi tercihiyle değişir, bileşen içinde tutulur.
+ * - `mobileOpen` (mobil, `< 768px`): parent (MainLayoutComponent) tarafından
+ *   kontrol edilen overlay/drawer durumu; hamburger butonla açılır, bir linke
+ *   tıklanınca veya arka plana (backdrop) tıklanınca kapanır.
+ *
+ * Menü öğeleri, aktif kullanıcının rolüne göre filtrelenir — yetkisiz
+ * olduğu sayfalar menüde hiç görünmez.
+ */
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
   template: `
-    <aside class="sidebar" [class.sidebar--collapsed]="collapsed()">
+    @if (mobileOpen) {
+      <div class="sidebar__backdrop" (click)="closeMobile.emit()"></div>
+    }
+
+    <aside
+      class="sidebar"
+      [class.sidebar--collapsed]="collapsed()"
+      [class.sidebar--mobile-open]="mobileOpen"
+    >
       <div class="sidebar__header">
         @if (!collapsed()) {
           <span class="sidebar__title">Eğitim Akademisi</span>
@@ -23,11 +45,12 @@ import { NAV_ITEMS } from '../../../core/models/nav-item.model';
       </div>
 
       <nav class="sidebar__nav">
-        @for (item of navItems; track item.route) {
-          <a
+        @for (item of visibleNavItems; track item.route) {
+          
             [routerLink]="item.route"
             routerLinkActive="sidebar__link--active"
             class="sidebar__link"
+            (click)="closeMobile.emit()"
           >
             <span class="sidebar__icon">{{ item.icon }}</span>
             @if (!collapsed()) {
@@ -46,7 +69,7 @@ import { NAV_ITEMS } from '../../../core/models/nav-item.model';
       height: 100vh;
       background-color: var(--color-surface);
       border-right: 1px solid var(--color-border);
-      transition: width 0.2s ease;
+      transition: width 0.2s ease, transform 0.2s ease;
       overflow-x: hidden;
     }
 
@@ -127,11 +150,49 @@ import { NAV_ITEMS } from '../../../core/models/nav-item.model';
     .sidebar__label {
       font-size: var(--font-size-sm);
     }
+
+    .sidebar__backdrop {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(15, 23, 42, 0.45);
+      z-index: 20;
+    }
+
+    /* Mobilde sidebar varsayılan olarak ekran dışına gizlenir; sadece
+       mobileOpen true iken içeri kayar (overlay/drawer davranışı). */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        inset-block: 0;
+        left: 0;
+        z-index: 21;
+        width: var(--sidebar-width);
+        transform: translateX(-100%);
+        box-shadow: var(--shadow-md);
+      }
+
+      .sidebar--collapsed {
+        width: var(--sidebar-width);
+      }
+
+      .sidebar--mobile-open {
+        transform: translateX(0);
+      }
+    }
   `],
 })
 export class SidebarComponent {
-  protected readonly navItems = NAV_ITEMS;
+  private readonly sessionService = inject(SessionService);
+
+  /** Mobil overlay açık/kapalı durumu — MainLayoutComponent tarafından yönetilir. */
+  @Input() mobileOpen = false;
+  @Output() closeMobile = new EventEmitter<void>();
+
   protected readonly collapsed = signal(false);
+
+  protected get visibleNavItems() {
+    return NAV_ITEMS.filter((item) => this.sessionService.hasRole(item.roles));
+  }
 
   protected toggleCollapsed(): void {
     this.collapsed.update((value) => !value);

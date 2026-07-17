@@ -1,16 +1,55 @@
+import { UserRole } from './enums';
+
 export interface NavItem {
   label: string;
   route: string;
   icon: string;
+  /** Bu menü öğesini görebilecek roller. Boş/undefined ise tüm roller görür. */
+  roles?: UserRole[];
 }
 
 export const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', route: '/dashboard', icon: '📊' },
-  { label: 'Kurslar', route: '/kurslar', icon: '📚' },
-  { label: 'Modüller', route: '/moduller', icon: '🧩' },
-  { label: 'Katılımcılar', route: '/katilimcilar', icon: '👥' },
-  { label: 'Sınavlar', route: '/sinavlar', icon: '📝' },
-  { label: 'Sonuçlar', route: '/sonuclar', icon: '✅' },
-  { label: 'Sertifikalar', route: '/sertifikalar', icon: '🎓' },
-  { label: 'Audit Log', route: '/audit-log', icon: '🗂️' },
+  {
+    label: 'Kurslar',
+    route: '/kurslar',
+    icon: '📚',
+    roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen],
+  },
+  {
+    label: 'Modüller',
+    route: '/moduller',
+    icon: '🧩',
+    roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen],
+  },
+  {
+    label: 'Katılımcılar',
+    route: '/katilimcilar',
+    icon: '👥',
+    roles: [UserRole.EgitimYoneticisi],
+  },
+  {
+    label: 'Sınavlar',
+    route: '/sinavlar',
+    icon: '📝',
+    roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen],
+  },
+  {
+    label: 'Sonuçlar',
+    route: '/sonuclar',
+    icon: '✅',
+    roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen],
+  },
+  {
+    label: 'Sertifikalar',
+    route: '/sertifikalar',
+    icon: '🎓',
+    roles: [UserRole.EgitimYoneticisi],
+  },
+  {
+    label: 'Audit Log',
+    route: '/audit-log',
+    icon: '🗂️',
+    roles: [UserRole.EgitimYoneticisi],
+  },
 ];

@@ -8,21 +8,67 @@ import { ExamListComponent } from './features/academy/pages/exam-list/exam-list.
 import { ExamResultListComponent } from './features/academy/pages/exam-result-list/exam-result-list.component';
 import { CertificateEligibilityListComponent } from './features/academy/pages/certificate-eligibility-list/certificate-eligibility-list.component';
 import { AuditLogListComponent } from './features/academy/pages/audit-log-list/audit-log-list.component';
+import { roleGuard } from './core/guards/role.guard';
+import { UserRole } from './core/models/enums';
 
 /**
- * Uygulama rotaları. Doküman 6. bölümdeki (Sayfalar ve Rotalar) route
- * listesiyle birebir örtüşür; ekran-listesi.md ile referans doğrulanmıştır.
- * "/kurslar/yeni" 4. günde (formlar) eklenecektir.
+ * Uygulama rotaları.
+ * "/kurslar/yeni" ayrı bir route değil, Dialog + CourseForm ile /kurslar
+ * içinde çözülmüştür (bkz. course-list.component.ts).
+ *
+ * `data.roles`, roleGuard tarafından okunur ve o rotaya erişebilecek
+ * rolleri belirtir. `data.roles` tanımlanmayan route'lar (örn. dashboard)
+ * tüm rollere açıktır.
  */
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
-  { path: 'kurslar', component: CourseListComponent },
-  { path: 'kurslar/:id', component: CourseDetailComponent },
-  { path: 'moduller', component: CourseModuleListComponent },
-  { path: 'katilimcilar', component: ParticipantListComponent },
-  { path: 'sinavlar', component: ExamListComponent },
-  { path: 'sonuclar', component: ExamResultListComponent },
-  { path: 'sertifikalar', component: CertificateEligibilityListComponent },
-  { path: 'audit-log', component: AuditLogListComponent },
+  {
+    path: 'kurslar',
+    component: CourseListComponent,
+    canActivate: [roleGuard],
+    data: { roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen] },
+  },
+  {
+    path: 'kurslar/:id',
+    component: CourseDetailComponent,
+    canActivate: [roleGuard],
+    data: { roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen] },
+  },
+  {
+    path: 'moduller',
+    component: CourseModuleListComponent,
+    canActivate: [roleGuard],
+    data: { roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen] },
+  },
+  {
+    path: 'katilimcilar',
+    component: ParticipantListComponent,
+    canActivate: [roleGuard],
+    data: { roles: [UserRole.EgitimYoneticisi] },
+  },
+  {
+    path: 'sinavlar',
+    component: ExamListComponent,
+    canActivate: [roleGuard],
+    data: { roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen] },
+  },
+  {
+    path: 'sonuclar',
+    component: ExamResultListComponent,
+    canActivate: [roleGuard],
+    data: { roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen] },
+  },
+  {
+    path: 'sertifikalar',
+    component: CertificateEligibilityListComponent,
+    canActivate: [roleGuard],
+    data: { roles: [UserRole.EgitimYoneticisi] },
+  },
+  {
+    path: 'audit-log',
+    component: AuditLogListComponent,
+    canActivate: [roleGuard],
+    data: { roles: [UserRole.EgitimYoneticisi] },
+  },
 ];
