@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { CourseService } from '../../services/course.service';
 import { ParticipantService } from '../../services/participant.service';
@@ -31,15 +32,23 @@ export class DashboardComponent implements OnInit {
   loading = true;
   errorMessage: string | null = null;
   cards: KpiCard[] = [];
+  /** roleGuard tarafından ?yetkisiz=1 ile yönlendirildiyse true olur. */
+  showUnauthorizedWarning = false;
 
   constructor(
     private courseService: CourseService,
     private participantService: ParticipantService,
     private enrollmentService: EnrollmentService,
-    private certificateEligibilityService: CertificateEligibilityService
+    private certificateEligibilityService: CertificateEligibilityService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.showUnauthorizedWarning = this.route.snapshot.queryParamMap.get('yetkisiz') === '1';
+    if (this.showUnauthorizedWarning) {
+      this.router.navigate([], { relativeTo: this.route, queryParams: {} });
+    }
     this.load();
   }
 
@@ -73,5 +82,9 @@ export class DashboardComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  dismissUnauthorizedWarning(): void {
+    this.showUnauthorizedWarning = false;
   }
 }

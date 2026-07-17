@@ -7,6 +7,32 @@
   }
 }
 
+.dashboard__banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-lg);
+  font-size: var(--font-size-sm);
+}
+
+.dashboard__banner--warning {
+  background-color: rgba(217, 119, 6, 0.12);
+  border: 1px solid var(--color-warning);
+  color: var(--color-warning);
+}
+
+.dashboard__banner-close {
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  padding: 0 var(--space-xs);
+}
+
 .dashboard__state {
   display: flex;
   align-items: center;

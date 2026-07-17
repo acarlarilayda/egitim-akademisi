@@ -3,6 +3,13 @@
     <h1>Dashboard</h1>
   </div>
 
+  <div class="dashboard__banner dashboard__banner--warning" *ngIf="showUnauthorizedWarning">
+    <span>🔒 Bu sayfaya erişim yetkiniz yok, Dashboard'a yönlendirildiniz.</span>
+    <button type="button" class="dashboard__banner-close" (click)="dismissUnauthorizedWarning()" aria-label="Kapat">
+      ✕
+    </button>
+  </div>
+
   <div class="dashboard__state" *ngIf="loading">
     <span class="dashboard__spinner"></span>
     <span>Yükleniyor...</span>
