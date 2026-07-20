@@ -14,8 +14,20 @@
   <ng-container *ngIf="!loading && !errorMessage && course as c">
     <div class="page__header">
       <h1>{{ c.title }}</h1>
-      <span class="status-badge" [attr.data-status]="c.status">{{ c.status }}</span>
+      <div class="page__header-status">
+        <span class="status-badge" [attr.data-status]="c.status">{{ c.status }}</span>
+        <button
+          type="button"
+          class="status-action-button"
+          *ngIf="nextCourseStatus"
+          (click)="openStatusConfirm()"
+        >
+          {{ courseStatusActionLabel }}
+        </button>
+      </div>
     </div>
+
+    <p class="status-action-error" *ngIf="statusActionError">⚠️ {{ statusActionError }}</p>
 
     <p class="course-description">{{ c.description }}</p>
 
@@ -61,6 +73,7 @@
     </div>
 
     <div class="tab-panel" *ngIf="activeTab === 'participants'">
+      <p class="status-action-error" *ngIf="enrollmentActionError">⚠️ {{ enrollmentActionError }}</p>
       <p class="tab-panel__empty" *ngIf="enrollmentRows.length === 0">Bu kursa ait katılımcı kaydı yok.</p>
       <table class="tab-table" *ngIf="enrollmentRows.length > 0">
         <thead>
@@ -76,9 +89,18 @@
             <td>{{ row.participantName }}</td>
             <td><span class="status-badge" [attr.data-status]="row.status">{{ row.status }}</span></td>
             <td>{{ row.enrolledAt | date: 'dd.MM.yyyy' }}</td>
-            <td>
+            <td class="tab-table__actions">
               <button type="button" class="link-button" (click)="openAttendanceDialog(row.participantId)">
                 Katılım İşle
+              </button>
+              <button
+                type="button"
+                class="link-button"
+                *ngFor="let action of enrollmentActionsFor(row)"
+                [class.link-button--danger]="action.danger"
+                (click)="openEnrollmentActionConfirm(row.id, action)"
+              >
+                {{ action.label }}
               </button>
             </td>
           </tr>
@@ -120,3 +142,22 @@
     (cancelled)="onAttendanceDialogClosed()"
   ></app-attendance-mark-form>
 </app-dialog>
+
+<app-confirm-dialog
+  [open]="statusConfirmOpen"
+  title="Kurs Durumunu Değiştir"
+  [message]="statusConfirmMessage"
+  [confirmLabel]="courseStatusActionLabel"
+  (confirmed)="confirmStatusChange()"
+  (cancelled)="cancelStatusChange()"
+></app-confirm-dialog>
+
+<app-confirm-dialog
+  [open]="enrollmentConfirmOpen"
+  title="Katılım Durumunu Değiştir"
+  [message]="enrollmentConfirmMessage"
+  [confirmLabel]="enrollmentConfirmLabel"
+  [danger]="enrollmentConfirmDanger"
+  (confirmed)="confirmEnrollmentAction()"
+  (cancelled)="cancelEnrollmentAction()"
+></app-confirm-dialog>
