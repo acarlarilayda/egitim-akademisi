@@ -1,0 +1,14 @@
+<div class="page">
+  <div class="page__header">
+    <h1>Yeni Kurs</h1>
+  </div>
+
+  <div class="course-create__card">
+    <app-course-form
+      [course]="null"
+      [instructors]="instructors"
+      (saved)="onSaved()"
+      (cancelled)="onCancelled()"
+    ></app-course-form>
+  </div>
+</div>
