@@ -4,16 +4,18 @@ import { UserRole } from '../models/enums';
 const STORAGE_KEY = 'egitim-akademisi-active-role';
 
 /** Demo kullanıcı — henüz gerçek bir login akışı olmadığı için sadece
- * rol bazlı davranışı test/demo edebilmek amacıyla tanımlanmıştır. */
+ * rol bazlı davranışı test/demo edebilmek amacıyla tanımlanmıştır.
+ * `id`, audit log kayıtlarında "kim yaptı" bilgisini tutmak için kullanılır. */
 export interface DemoUser {
+  id: string;
   fullName: string;
   role: UserRole;
 }
 
 export const DEMO_USERS: DemoUser[] = [
-  { fullName: 'Elif Yıldız', role: UserRole.EgitimYoneticisi },
-  { fullName: 'Mert Kaya', role: UserRole.Egitmen },
-  { fullName: 'Ayşe Demir', role: UserRole.Katilimci },
+  { id: 'demo-egitim-yoneticisi', fullName: 'Elif Yıldız', role: UserRole.EgitimYoneticisi },
+  { id: 'demo-egitmen', fullName: 'Mert Kaya', role: UserRole.Egitmen },
+  { id: 'demo-katilimci', fullName: 'Ayşe Demir', role: UserRole.Katilimci },
 ];
 
 /**
