@@ -33,6 +33,7 @@
     </ng-template>
 
     <ng-template dtCell="actions" let-row="row">
+      <a class="link-button" [routerLink]="['/sinavlar', row.id, 'sorular']">Sorular</a>
       <button type="button" class="link-button" (click)="openEditDialog(row)">Düzenle</button>
     </ng-template>
   </app-data-table>

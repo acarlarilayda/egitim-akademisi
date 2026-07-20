@@ -33,6 +33,7 @@ Bu doküman, projede yer alacak tüm ekranları ve bağlı oldukları route'lar�
 | Ekran | Route | Erişim |
 |---|---|---|
 | Sınav Listesi | `/sinavlar` | Eğitim Yöneticisi, Eğitmen |
+| Soru Bankası | `/sinavlar/:examId/sorular` | Eğitim Yöneticisi, Eğitmen |
 
 ## Puanlama / Sonuçlar
 

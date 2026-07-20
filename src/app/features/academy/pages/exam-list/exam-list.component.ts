@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ExamService } from '../../services/exam.service';
 import { CourseService } from '../../services/course.service';
 import { Exam } from '../../models/exam.model';
@@ -17,6 +18,7 @@ import { DebounceDirective } from '../../../../shared/directives/debounce.direct
   imports: [
     CommonModule,
     FormsModule,
+    RouterLink,
     DataTableComponent,
     DataTableCellDirective,
     DialogComponent,
