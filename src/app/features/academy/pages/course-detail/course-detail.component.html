@@ -15,7 +15,7 @@
     <div class="page__header">
       <h1>{{ c.title }}</h1>
       <div class="page__header-status">
-        <span class="status-badge" [attr.data-status]="c.status">{{ c.status }}</span>
+        <span class="status-badge" [attr.data-status]="c.status">{{ c.status | statusLabel }}</span>
         <button
           type="button"
           class="status-action-button"
@@ -87,7 +87,7 @@
         <tbody>
           <tr *ngFor="let row of enrollmentRows">
             <td>{{ row.participantName }}</td>
-            <td><span class="status-badge" [attr.data-status]="row.status">{{ row.status }}</span></td>
+            <td><span class="status-badge" [attr.data-status]="row.status">{{ row.status | statusLabel }}</span></td>
             <td>{{ row.enrolledAt | date: 'dd.MM.yyyy' }}</td>
             <td class="tab-table__actions">
               <button type="button" class="link-button" (click)="openAttendanceDialog(row.participantId)">

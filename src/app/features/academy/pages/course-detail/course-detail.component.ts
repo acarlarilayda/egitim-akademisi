@@ -16,6 +16,7 @@ import { CourseStatus, EnrollmentStatus } from '../../../../core/models/enums';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { AttendanceMarkFormComponent } from '../attendance-mark-form/attendance-mark-form.component';
+import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
 
 type DetailTab = 'modules' | 'participants' | 'results';
 
@@ -83,7 +84,7 @@ const ENROLLMENT_ACTIONS: Record<EnrollmentStatus, EnrollmentAction[]> = {
 @Component({
   selector: 'app-course-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, DialogComponent, ConfirmDialogComponent, AttendanceMarkFormComponent],
+imports: [CommonModule, RouterLink, DialogComponent, ConfirmDialogComponent, AttendanceMarkFormComponent, StatusLabelPipe],
   templateUrl: './course-detail.component.html',
   styleUrl: './course-detail.component.scss',
 })
