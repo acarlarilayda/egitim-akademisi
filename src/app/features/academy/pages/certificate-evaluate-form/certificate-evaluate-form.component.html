@@ -21,9 +21,26 @@
     </select>
   </app-form-field>
 
-  <p class="certificate-evaluate-form__hint">
-    Katılım oranı ve sınav başarı durumu otomatik olarak hesaplanacaktır.
+  <p class="certificate-evaluate-form__hint" *ngIf="!eligibilityPreview()">
+    Katılım oranı ve sınav başarı durumu, kurs ve katılımcı seçildiğinde otomatik olarak hesaplanacaktır.
   </p>
+
+  <div class="certificate-evaluate-form__preview" *ngIf="eligibilityPreview() as preview">
+    <div class="certificate-evaluate-form__preview-row">
+      <span>Katılım Oranı</span>
+      <strong>%{{ preview.attendanceRate }}</strong>
+    </div>
+    <div class="certificate-evaluate-form__preview-row">
+      <span>Sınav Durumu</span>
+      <strong>{{ preview.examPassed ? 'Geçti' : 'Geçmedi' }}</strong>
+    </div>
+    <div
+      class="certificate-evaluate-form__preview-result"
+      [class.certificate-evaluate-form__preview-result--eligible]="preview.isEligible"
+    >
+      {{ preview.isEligible ? '✅ Uygun (Eligible)' : '⏳ Henüz Uygun Değil (Pending)' }}
+    </div>
+  </div>
 
   <p class="certificate-evaluate-form__form-error" *ngIf="errorMessage">{{ errorMessage }}</p>
 
