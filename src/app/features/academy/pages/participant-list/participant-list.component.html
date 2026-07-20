@@ -1,8 +1,29 @@
 <div class="page">
   <div class="page__header">
     <h1>Katılımcılar</h1>
-    <button type="button" class="page__new-button" (click)="openCreateDialog()">+ Yeni Katılımcı</button>
+    <div class="page__header-actions">
+      <button type="button" class="page__secondary-button" (click)="exportParticipants()">⭳ Dışa Aktar</button>
+      <button
+        type="button"
+        class="page__secondary-button"
+        [disabled]="importing"
+        (click)="triggerImport(importFileInput)"
+      >
+        {{ importing ? 'İçe aktarılıyor...' : '⭱ İçe Aktar' }}
+      </button>
+      <input
+        #importFileInput
+        type="file"
+        accept="application/json,.json"
+        hidden
+        (change)="onImportFileSelected($event)"
+      />
+      <button type="button" class="page__new-button" (click)="openCreateDialog()">+ Yeni Katılımcı</button>
+    </div>
   </div>
+
+  <p class="page__import-message" *ngIf="importMessage">✅ {{ importMessage }}</p>
+  <p class="page__import-message page__import-message--error" *ngIf="importErrorMessage">⚠️ {{ importErrorMessage }}</p>
 
   <div class="page__filters">
     <input
