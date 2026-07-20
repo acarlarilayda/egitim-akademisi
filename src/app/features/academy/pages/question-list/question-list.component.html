@@ -1,0 +1,64 @@
+<div class="page">
+  <a class="back-link" routerLink="/sinavlar">← Sınavlara dön</a>
+
+  <div class="page__header">
+    <h1>Sorular{{ exam ? ' — ' + exam.title : '' }}</h1>
+    <button type="button" class="page__new-button" (click)="openCreateDialog()">+ Yeni Soru</button>
+  </div>
+
+  <app-data-table
+    [columns]="columns"
+    [rows]="questions"
+    [loading]="loading()"
+    [errorMessage]="errorMessage"
+    emptyMessage="Bu sınava ait soru yok."
+    (retry)="load()"
+  >
+    <ng-template dtCell="text" let-value>
+      <span class="question-text">{{ value }}</span>
+    </ng-template>
+
+    <ng-template dtCell="options" let-value>
+      {{ value.length }}
+    </ng-template>
+
+    <ng-template dtCell="status" let-value>
+      <span class="status-badge" [attr.data-status]="value">{{ value | statusLabel }}</span>
+    </ng-template>
+
+    <ng-template dtCell="actions" let-row="row">
+      <button type="button" class="link-button" (click)="openEditDialog(row)">Düzenle</button>
+      <button
+        type="button"
+        class="link-button link-button--danger"
+        *ngIf="row.status === Status.Active"
+        (click)="requestDeactivate(row.id)"
+      >
+        Pasife Al
+      </button>
+    </ng-template>
+  </app-data-table>
+</div>
+
+<app-dialog
+  [open]="dialogOpen"
+  [title]="editingQuestion ? 'Soruyu Düzenle' : 'Yeni Soru'"
+  (closed)="onDialogClosed()"
+>
+  <app-question-form
+    [question]="editingQuestion"
+    [examId]="examId"
+    (saved)="onSaved()"
+    (cancelled)="onDialogClosed()"
+  ></app-question-form>
+</app-dialog>
+
+<app-confirm-dialog
+  [open]="deactivateConfirmOpen"
+  title="Soruyu Pasife Al"
+  message="Bu soruyu pasife almak istediğinize emin misiniz? Pasife alınan bir soru sınavlarda kullanılmaz ve tekrar aktif hale getirilemez."
+  confirmLabel="Pasife Al"
+  [danger]="true"
+  (confirmed)="confirmDeactivate()"
+  (cancelled)="cancelDeactivate()"
+></app-confirm-dialog>
