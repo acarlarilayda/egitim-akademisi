@@ -1,0 +1,61 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="question-form">
+  <app-form-field
+    label="Soru Metni"
+    [control]="form.get('text')"
+    [errorMessages]="{ required: 'Soru metni zorunludur.', whitespace: 'Soru metni sadece boşluk olamaz.' }"
+  >
+    <textarea rows="3" formControlName="text"></textarea>
+  </app-form-field>
+
+  <div class="question-form__options" formArrayName="options">
+    <label class="question-form__options-label">Seçenekler (doğru olanı işaretleyin)</label>
+
+    <div class="question-form__option-row" *ngFor="let optionControl of optionsArray.controls; let i = index">
+      <input
+        type="radio"
+        name="correctOptionIndex"
+        [value]="i"
+        [checked]="form.get('correctOptionIndex')?.value === i"
+        (change)="form.get('correctOptionIndex')?.setValue(i)"
+      />
+      <input type="text" [formControlName]="i" [placeholder]="'Seçenek ' + (i + 1)" />
+      <button
+        type="button"
+        class="question-form__remove-option"
+        *ngIf="optionsArray.length > minOptions"
+        (click)="removeOption(i)"
+        aria-label="Seçeneği sil"
+      >
+        ✕
+      </button>
+    </div>
+
+    <button
+      type="button"
+      class="question-form__add-option"
+      *ngIf="optionsArray.length < maxOptions"
+      (click)="addOption()"
+    >
+      + Seçenek Ekle
+    </button>
+
+    <p class="question-form__field-error" *ngIf="optionsArray.invalid && optionsArray.touched">
+      En az {{ minOptions }} seçenek girilmelidir, hepsi doldurulmalıdır.
+    </p>
+    <p
+      class="question-form__field-error"
+      *ngIf="form.get('correctOptionIndex')?.invalid && form.get('correctOptionIndex')?.touched"
+    >
+      Doğru cevap seçilmelidir.
+    </p>
+  </div>
+
+  <p class="question-form__form-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <div class="question-form__actions">
+    <button type="button" class="question-form__cancel" (click)="cancel()">İptal</button>
+    <button type="submit" class="question-form__submit" [disabled]="submitting">
+      {{ submitting ? 'Kaydediliyor...' : (isEditMode ? 'Güncelle' : 'Oluştur') }}
+    </button>
+  </div>
+</form>

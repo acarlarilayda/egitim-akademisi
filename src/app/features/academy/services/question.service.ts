@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 import { StorageService } from '../../../core/services/storage.service';
 import { MockApiService } from '../../../core/services/mock-api.service';
 import { AsyncEntityService } from '../../../core/services/async-entity-base.service';
+import { AuditLogService } from '../../../core/services/audit-log.service';
+import { SessionService } from '../../../core/services/session.service';
 import { Question } from '../models/question.model';
 import { QuestionStatus } from '../../../core/models/enums';
 import { demoQuestions } from '../../../core/mock-data/demo-data';
@@ -20,7 +23,12 @@ const STORAGE_KEY = 'academy-questions';
 export class QuestionService extends AsyncEntityService<Question> {
   readonly questions$ = this.items$;
 
-  constructor(storageService: StorageService, mockApi: MockApiService) {
+  constructor(
+    storageService: StorageService,
+    mockApi: MockApiService,
+    private auditLogService: AuditLogService,
+    private sessionService: SessionService
+  ) {
     super(STORAGE_KEY, storageService, mockApi, demoQuestions);
   }
 
@@ -79,6 +87,7 @@ export class QuestionService extends AsyncEntityService<Question> {
   /**
    * Bir soruyu pasife alır. Doküman kuralı gereği aktif sorular
    * doğrudan silinemez; bu metod "silme" işleminin yerini alır.
+   * Bu, geri döndürülemez ve kritik bir işlem olduğu için audit log'a düşer.
    */
   deactivate(id: string): Observable<Question | undefined> {
     return this.runAsync(() => {
@@ -97,6 +106,26 @@ export class QuestionService extends AsyncEntityService<Question> {
       this.persistSync(updatedQuestions);
 
       return updatedQuestions.find((q) => q.id === id);
-    });
+    }).pipe(
+      switchMap((question) => {
+        if (!question) {
+          return [question];
+        }
+
+        const activeUser = this.sessionService.currentUser();
+        return this.auditLogService
+          .log({
+            entityType: 'Question',
+            entityId: id,
+            action: 'DEACTIVATE',
+            performedByUserId: activeUser.id,
+            performedByRole: activeUser.role,
+            description: 'Soru pasife alındı (soft delete)',
+            oldValue: QuestionStatus.Active,
+            newValue: QuestionStatus.Inactive,
+          })
+          .pipe(map(() => question));
+      })
+    );
   }
 }
