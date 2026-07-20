@@ -69,3 +69,12 @@
     (cancelled)="onDialogClosed()"
   ></app-certificate-evaluate-form>
 </app-dialog>
+
+<app-confirm-dialog
+  [open]="issueConfirmOpen"
+  title="Sertifika Ver"
+  message="Bu katılımcıya sertifika vermek istediğinize emin misiniz? Bu işlem geri alınamaz."
+  confirmLabel="Sertifika Ver"
+  (confirmed)="confirmIssueCertificate()"
+  (cancelled)="cancelIssueCertificate()"
+></app-confirm-dialog>

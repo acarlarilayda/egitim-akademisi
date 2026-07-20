@@ -14,6 +14,7 @@ import { DialogComponent } from '../../../../shared/components/dialog/dialog.com
 import { CertificateEvaluateFormComponent } from '../certificate-evaluate-form/certificate-evaluate-form.component';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-certificate-eligibility-list',
@@ -27,6 +28,7 @@ import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
     CertificateEvaluateFormComponent,
     DebounceDirective,
     StatusLabelPipe,
+    ConfirmDialogComponent,
   ],
   templateUrl: './certificate-eligibility-list.component.html',
   styleUrl: './certificate-eligibility-list.component.scss',
@@ -44,6 +46,11 @@ export class CertificateEligibilityListComponent implements OnInit {
   readonly statusOptions = Object.values(CertificateEligibilityStatus);
 
   dialogOpen = false;
+
+  /** Sertifika verme, geri döndürülemez kritik bir işlem olduğu için
+   * ConfirmDialogComponent ile onay alınmadan uygulanmaz. */
+  issueConfirmOpen = false;
+  pendingIssueId: string | null = null;
 
   readonly loading = this.certificateEligibilityService.loading;
   readonly Status = CertificateEligibilityStatus;
@@ -127,15 +134,32 @@ export class CertificateEligibilityListComponent implements OnInit {
   }
 
   issueCertificate(id: string): void {
-    const confirmed = confirm('Bu katılımcıya sertifika vermek istediğinize emin misiniz?');
-    if (!confirmed) {
+    this.pendingIssueId = id;
+    this.issueConfirmOpen = true;
+  }
+
+  confirmIssueCertificate(): void {
+    if (!this.pendingIssueId) {
       return;
     }
 
     this.errorMessage = null;
-    this.certificateEligibilityService.issueCertificate(id).subscribe({
-      next: () => this.load(),
-      error: (err) => (this.errorMessage = err?.message ?? 'Sertifika verilirken bir hata oluştu.'),
+    this.certificateEligibilityService.issueCertificate(this.pendingIssueId).subscribe({
+      next: () => {
+        this.issueConfirmOpen = false;
+        this.pendingIssueId = null;
+        this.load();
+      },
+      error: (err) => {
+        this.errorMessage = err?.message ?? 'Sertifika verilirken bir hata oluştu.';
+        this.issueConfirmOpen = false;
+        this.pendingIssueId = null;
+      },
     });
+  }
+
+  cancelIssueCertificate(): void {
+    this.issueConfirmOpen = false;
+    this.pendingIssueId = null;
   }
 }
