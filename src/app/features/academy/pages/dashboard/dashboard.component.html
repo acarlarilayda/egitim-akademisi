@@ -1,6 +1,9 @@
 <div class="page">
   <div class="page__header">
     <h1>Dashboard</h1>
+    <button type="button" class="page__export-button" *ngIf="!loading && !errorMessage" (click)="exportReport()">
+      ⭳ Raporu Dışa Aktar
+    </button>
   </div>
 
   <div class="dashboard__banner dashboard__banner--warning" *ngIf="showUnauthorizedWarning">
@@ -28,5 +31,48 @@
         <span class="kpi-card__label">{{ card.label }}</span>
       </div>
     </div>
+  </div>
+
+  <div class="dashboard__panels" *ngIf="!loading && !errorMessage">
+    <section class="dashboard__panel">
+      <h2 class="dashboard__panel-title">Kurs Durum Dağılımı</h2>
+      <div class="status-chart">
+        <div class="status-chart__row" *ngFor="let bar of statusDistribution">
+          <span class="status-chart__label">{{ bar.status | statusLabel }}</span>
+          <div class="status-chart__track">
+            <div
+              class="status-chart__fill"
+              [attr.data-status]="bar.status"
+              [style.width.%]="bar.percentage"
+            ></div>
+          </div>
+          <span class="status-chart__value">{{ bar.count }}</span>
+        </div>
+        <p class="dashboard__panel-empty" *ngIf="statusDistribution.length === 0">Henüz kurs yok.</p>
+      </div>
+    </section>
+
+    <section class="dashboard__panel">
+      <h2 class="dashboard__panel-title">Son Aktiviteler</h2>
+      <table class="activity-table" *ngIf="recentActivity.length > 0">
+        <thead>
+          <tr>
+            <th>Zaman</th>
+            <th>Varlık</th>
+            <th>İşlem</th>
+            <th>Açıklama</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let entry of recentActivity">
+            <td>{{ entry.createdAt | date: 'dd.MM.yyyy HH:mm' }}</td>
+            <td>{{ entry.entityType }}</td>
+            <td>{{ entry.action }}</td>
+            <td>{{ entry.description }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="dashboard__panel-empty" *ngIf="recentActivity.length === 0">Henüz kayıtlı aktivite yok.</p>
+    </section>
   </div>
 </div>
