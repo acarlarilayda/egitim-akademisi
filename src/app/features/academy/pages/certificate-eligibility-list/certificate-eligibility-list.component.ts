@@ -13,6 +13,7 @@ import { DataTableCellDirective } from '../../../../shared/components/data-table
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 import { CertificateEvaluateFormComponent } from '../certificate-evaluate-form/certificate-evaluate-form.component';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
+import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
 
 @Component({
   selector: 'app-certificate-eligibility-list',
@@ -25,6 +26,7 @@ import { DebounceDirective } from '../../../../shared/directives/debounce.direct
     DialogComponent,
     CertificateEvaluateFormComponent,
     DebounceDirective,
+    StatusLabelPipe,
   ],
   templateUrl: './certificate-eligibility-list.component.html',
   styleUrl: './certificate-eligibility-list.component.scss',

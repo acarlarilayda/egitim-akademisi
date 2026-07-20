@@ -13,6 +13,7 @@ import { DialogComponent } from '../../../../shared/components/dialog/dialog.com
 import { CourseFormComponent } from '../course-form/course-form.component';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { PermissionDirective } from '../../../../shared/directives/permission.directive';
+import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
 
 /**
  * Kurs listesi ekranı (/kurslar).
@@ -34,6 +35,7 @@ import { PermissionDirective } from '../../../../shared/directives/permission.di
     CourseFormComponent,
     DebounceDirective,
     PermissionDirective,
+    StatusLabelPipe,
   ],
   templateUrl: './course-list.component.html',
   styleUrl: './course-list.component.scss',

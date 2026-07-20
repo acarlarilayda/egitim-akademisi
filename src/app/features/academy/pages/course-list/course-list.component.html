@@ -29,7 +29,7 @@
     (retry)="load()"
   >
     <ng-template dtCell="status" let-value>
-      <span class="status-badge" [attr.data-status]="value">{{ value }}</span>
+      <span class="status-badge" [attr.data-status]="value">{{ value | statusLabel }}</span>
     </ng-template>
 
     <ng-template dtCell="startDate" let-value>
