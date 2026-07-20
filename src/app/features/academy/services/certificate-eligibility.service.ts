@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 import { StorageService } from '../../../core/services/storage.service';
 import { MockApiService } from '../../../core/services/mock-api.service';
 import { AsyncEntityService } from '../../../core/services/async-entity-base.service';
+import { AuditLogService } from '../../../core/services/audit-log.service';
+import { SessionService } from '../../../core/services/session.service';
 import { CertificateEligibility } from '../models/certificate-eligibility.model';
 import { CertificateEligibilityStatus } from '../../../core/models/enums';
 import { demoCertificateEligibilities } from '../../../core/mock-data/demo-data';
@@ -21,7 +24,12 @@ const STORAGE_KEY = 'academy-certificate-eligibilities';
 export class CertificateEligibilityService extends AsyncEntityService<CertificateEligibility> {
   readonly eligibilities$ = this.items$;
 
-  constructor(storageService: StorageService, mockApi: MockApiService) {
+  constructor(
+    storageService: StorageService,
+    mockApi: MockApiService,
+    private auditLogService: AuditLogService,
+    private sessionService: SessionService
+  ) {
     super(STORAGE_KEY, storageService, mockApi, demoCertificateEligibilities);
   }
 
@@ -98,6 +106,7 @@ export class CertificateEligibilityService extends AsyncEntityService<Certificat
   /**
    * Uygun (Eligible) durumdaki bir katılımcıya sertifika verir.
    * Sadece Eligible durumundaki kayıtlar için sertifika verilebilir.
+   * Bu, geri döndürülemez ve kritik bir işlem olduğu için audit log'a düşer.
    */
   issueCertificate(id: string): Observable<CertificateEligibility> {
     return this.runAsync(() => {
@@ -119,6 +128,22 @@ export class CertificateEligibilityService extends AsyncEntityService<Certificat
       this.persistSync(updatedList);
 
       return updatedList.find((e) => e.id === id)!;
-    });
+    }).pipe(
+      switchMap((eligibility) => {
+        const activeUser = this.sessionService.currentUser();
+        return this.auditLogService
+          .log({
+            entityType: 'CertificateEligibility',
+            entityId: id,
+            action: 'CERTIFICATE_ISSUED',
+            performedByUserId: activeUser.id,
+            performedByRole: activeUser.role,
+            description: 'Katılımcıya sertifika verildi',
+            oldValue: CertificateEligibilityStatus.Eligible,
+            newValue: CertificateEligibilityStatus.Issued,
+          })
+          .pipe(map(() => eligibility));
+      })
+    );
   }
 }

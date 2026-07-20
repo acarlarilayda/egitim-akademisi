@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 import { StorageService } from '../../../core/services/storage.service';
 import { MockApiService } from '../../../core/services/mock-api.service';
 import { AsyncEntityService } from '../../../core/services/async-entity-base.service';
+import { AuditLogService } from '../../../core/services/audit-log.service';
+import { SessionService } from '../../../core/services/session.service';
 import { ExamResult } from '../models/exam-result.model';
 import { demoExamResults } from '../../../core/mock-data/demo-data';
 
@@ -19,7 +22,12 @@ const STORAGE_KEY = 'academy-exam-results';
 export class ExamResultService extends AsyncEntityService<ExamResult> {
   readonly examResults$ = this.items$;
 
-  constructor(storageService: StorageService, mockApi: MockApiService) {
+  constructor(
+    storageService: StorageService,
+    mockApi: MockApiService,
+    private auditLogService: AuditLogService,
+    private sessionService: SessionService
+  ) {
     super(STORAGE_KEY, storageService, mockApi, demoExamResults);
   }
 
@@ -76,6 +84,22 @@ export class ExamResultService extends AsyncEntityService<ExamResult> {
 
       this.persistSync([...this.getAllSync(), newResult]);
       return newResult;
-    });
+    }).pipe(
+      switchMap((result) => {
+        const activeUser = this.sessionService.currentUser();
+        return this.auditLogService
+          .log({
+            entityType: 'ExamResult',
+            entityId: result.id,
+            action: 'CREATE',
+            performedByUserId: activeUser.id,
+            performedByRole: activeUser.role,
+            description: `Sınav sonucu girildi: puan ${result.score}, ${result.isPassed ? 'geçti' : 'kaldı'}`,
+            oldValue: null,
+            newValue: result.isPassed ? 'passed' : 'failed',
+          })
+          .pipe(map(() => result));
+      })
+    );
   }
 }

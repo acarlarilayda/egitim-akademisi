@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 import { StorageService } from '../../../core/services/storage.service';
 import { MockApiService } from '../../../core/services/mock-api.service';
 import { AsyncEntityService } from '../../../core/services/async-entity-base.service';
+import { AuditLogService } from '../../../core/services/audit-log.service';
+import { SessionService } from '../../../core/services/session.service';
 import { Course } from '../models/course.model';
 import { CourseStatus } from '../../../core/models/enums';
 import { demoCourses } from '../../../core/mock-data/demo-data';
@@ -22,7 +25,12 @@ export class CourseService extends AsyncEntityService<Course> {
   /** Geriye dönük uyumluluk için: courses$ === items$ */
   readonly courses$ = this.items$;
 
-  constructor(storageService: StorageService, mockApi: MockApiService) {
+  constructor(
+    storageService: StorageService,
+    mockApi: MockApiService,
+    private auditLogService: AuditLogService,
+    private sessionService: SessionService
+  ) {
     super(STORAGE_KEY, storageService, mockApi, demoCourses);
   }
 
@@ -79,8 +87,11 @@ export class CourseService extends AsyncEntityService<Course> {
    * Draft -> Published -> Completed -> Archived
    * Yayına alınırken (Published) zorunlu alanların (title, description,
    * instructorId, capacity, passingScore) dolu olduğu kontrol edilir.
+   * Başarılı her geçiş, audit log'a bir kayıt düşürür.
    */
   changeStatus(id: string, newStatus: CourseStatus): Observable<Course> {
+    const previousStatus = this.getByIdSync(id)?.status;
+
     return this.runAsync(() => {
       const course = this.getByIdSync(id);
       if (!course) {
@@ -113,6 +124,22 @@ export class CourseService extends AsyncEntityService<Course> {
       this.persistSync(finalCourses);
 
       return finalCourses.find((c) => c.id === id)!;
-    });
+    }).pipe(
+      switchMap((course) => {
+        const activeUser = this.sessionService.currentUser();
+        return this.auditLogService
+          .log({
+            entityType: 'Course',
+            entityId: id,
+            action: 'STATUS_CHANGE',
+            performedByUserId: activeUser.id,
+            performedByRole: activeUser.role,
+            description: `Kurs durumu değiştirildi: ${previousStatus} -> ${newStatus}`,
+            oldValue: previousStatus ?? null,
+            newValue: newStatus,
+          })
+          .pipe(map(() => course));
+      })
+    );
   }
 }
