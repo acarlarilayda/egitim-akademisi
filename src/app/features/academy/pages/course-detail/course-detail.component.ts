@@ -18,6 +18,7 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
 import { AttendanceMarkFormComponent } from '../attendance-mark-form/attendance-mark-form.component';
 import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
 import { PermissionDirective } from '../../../../shared/directives/permission.directive';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { SessionService } from '../../../../core/services/session.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 
@@ -87,7 +88,7 @@ const ENROLLMENT_ACTIONS: Record<EnrollmentStatus, EnrollmentAction[]> = {
 @Component({
   selector: 'app-course-detail',
   standalone: true,
-imports: [CommonModule, RouterLink, DialogComponent, ConfirmDialogComponent, AttendanceMarkFormComponent, StatusLabelPipe, PermissionDirective],
+  imports: [CommonModule, RouterLink, DialogComponent, ConfirmDialogComponent, AttendanceMarkFormComponent, StatusLabelPipe, PermissionDirective, EmptyStateComponent],
   templateUrl: './course-detail.component.html',
   styleUrl: './course-detail.component.scss',
 })

@@ -48,7 +48,7 @@
           </div>
           <span class="status-chart__value">{{ bar.count }}</span>
         </div>
-        <p class="dashboard__panel-empty" *ngIf="statusDistribution.length === 0">Henüz kurs yok.</p>
+        <app-empty-state *ngIf="statusDistribution.length === 0" message="Henüz kurs yok."></app-empty-state>
       </div>
     </section>
 
@@ -72,7 +72,7 @@
           </tr>
         </tbody>
       </table>
-      <p class="dashboard__panel-empty" *ngIf="recentActivity.length === 0">Henüz kayıtlı aktivite yok.</p>
+      <app-empty-state *ngIf="recentActivity.length === 0" message="Henüz kayıtlı aktivite yok."></app-empty-state>
     </section>
   </div>
 </div>

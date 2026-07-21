@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTableCellDirective } from './data-table-cell.directive';
+import { EmptyStateComponent } from '../empty-state/empty-state.component';
 
 export interface TableColumn {
   /** Satır nesnesindeki alan adı (örn. 'title', 'status'). */
@@ -44,7 +45,7 @@ export type SortDirection = 'asc' | 'desc' | null;
 @Component({
   selector: 'app-data-table',
   standalone: true,
-  imports: [CommonModule, DataTableCellDirective],
+  imports: [CommonModule, DataTableCellDirective, EmptyStateComponent],
   templateUrl: './data-table.component.html',
   styleUrl: './data-table.component.scss',
 })

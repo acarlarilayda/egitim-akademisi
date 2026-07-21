@@ -57,7 +57,7 @@
     </div>
 
     <div class="tab-panel" *ngIf="activeTab === 'modules'">
-      <p class="tab-panel__empty" *ngIf="modules.length === 0">Bu kursa ait modül yok.</p>
+      <app-empty-state *ngIf="modules.length === 0" message="Bu kursa ait modül yok."></app-empty-state>
       <table class="tab-table" *ngIf="modules.length > 0">
         <thead>
           <tr>
@@ -76,7 +76,7 @@
 
     <div class="tab-panel" *ngIf="activeTab === 'participants'">
       <p class="status-action-error" *ngIf="enrollmentActionError">⚠️ {{ enrollmentActionError }}</p>
-      <p class="tab-panel__empty" *ngIf="enrollmentRows.length === 0">Bu kursa ait katılımcı kaydı yok.</p>
+      <app-empty-state *ngIf="enrollmentRows.length === 0" message="Bu kursa ait katılımcı kaydı yok."></app-empty-state>
       <table class="tab-table" *ngIf="enrollmentRows.length > 0">
         <thead>
           <tr>
@@ -111,7 +111,7 @@
     </div>
 
     <div class="tab-panel" *ngIf="activeTab === 'results'">
-      <p class="tab-panel__empty" *ngIf="examResultRows.length === 0">Bu kursa ait sınav sonucu yok.</p>
+      <app-empty-state *ngIf="examResultRows.length === 0" message="Bu kursa ait sınav sonucu yok."></app-empty-state>
       <table class="tab-table" *ngIf="examResultRows.length > 0">
         <thead>
           <tr>

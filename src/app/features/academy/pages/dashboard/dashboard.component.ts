@@ -10,6 +10,7 @@ import { AuditLogService } from '../../../../core/services/audit-log.service';
 import { AuditLogEntry } from '../../../../core/models/audit-log-entry.model';
 import { CourseStatus, CertificateEligibilityStatus } from '../../../../core/models/enums';
 import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 
 interface KpiCard {
   label: string;
@@ -38,7 +39,7 @@ const RECENT_ACTIVITY_LIMIT = 5;
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, StatusLabelPipe],
+  imports: [CommonModule, StatusLabelPipe, EmptyStateComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

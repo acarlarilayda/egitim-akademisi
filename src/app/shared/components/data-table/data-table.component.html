@@ -9,9 +9,10 @@
     <button type="button" class="data-table__retry" (click)="retry.emit()">Tekrar dene</button>
   </div>
 
-  <div class="data-table__state data-table__state--empty" *ngIf="!loading && !errorMessage && rows.length === 0">
-    {{ emptyMessage }}
-  </div>
+  <app-empty-state
+    *ngIf="!loading && !errorMessage && rows.length === 0"
+    [message]="emptyMessage"
+  ></app-empty-state>
 
   <table class="data-table__table" *ngIf="!loading && !errorMessage && rows.length > 0">
     <thead>
