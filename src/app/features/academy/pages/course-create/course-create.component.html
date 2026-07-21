@@ -5,6 +5,7 @@
 
   <div class="course-create__card">
     <app-course-form
+      #courseForm
       [course]="null"
       [instructors]="instructors"
       (saved)="onSaved()"
