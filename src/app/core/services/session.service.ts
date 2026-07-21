@@ -5,16 +5,20 @@ const STORAGE_KEY = 'egitim-akademisi-active-role';
 
 /** Demo kullanıcı — henüz gerçek bir login akışı olmadığı için sadece
  * rol bazlı davranışı test/demo edebilmek amacıyla tanımlanmıştır.
- * `id`, audit log kayıtlarında "kim yaptı" bilgisini tutmak için kullanılır. */
+ * `id`, audit log kayıtlarında "kim yaptı" bilgisini tutmak için kullanılır.
+ * `instructorId`, Egitmen rolündeki demo kullanıcıyı `Instructor` veri
+ * modelindeki karşılığına bağlar; "eğitmen sadece kendi kurslarının
+ * sonuçlarını düzenleyebilir" kuralı bu alan üzerinden uygulanır. */
 export interface DemoUser {
   id: string;
   fullName: string;
   role: UserRole;
+  instructorId?: string;
 }
 
 export const DEMO_USERS: DemoUser[] = [
   { id: 'demo-egitim-yoneticisi', fullName: 'Elif Yıldız', role: UserRole.EgitimYoneticisi },
-  { id: 'demo-egitmen', fullName: 'Mert Kaya', role: UserRole.Egitmen },
+  { id: 'demo-egitmen', fullName: 'Mert Kaya', role: UserRole.Egitmen, instructorId: 'inst-2' },
   { id: 'demo-katilimci', fullName: 'Ayşe Demir', role: UserRole.Katilimci },
 ];
 
@@ -49,6 +53,26 @@ export class SessionService {
       return true;
     }
     return allowedRoles.includes(this.currentRole());
+  }
+
+  /**
+   * Aktif kullanıcının, verilen eğitmene ait bir kursu yönetip
+   * yönetemeyeceğini belirler.
+   * Eğitim Yöneticisi her kursu yönetebilir; Eğitmen sadece
+   * `instructorId`'si kendisininkiyle eşleşen kursları yönetebilir.
+   */
+  canManageCourse(courseInstructorId: string): boolean {
+    const user = this.activeUser();
+
+    if (user.role === UserRole.EgitimYoneticisi) {
+      return true;
+    }
+
+    if (user.role === UserRole.Egitmen) {
+      return user.instructorId === courseInstructorId;
+    }
+
+    return false;
   }
 
   private getInitialUser(): DemoUser {

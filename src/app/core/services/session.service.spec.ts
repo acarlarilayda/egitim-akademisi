@@ -38,4 +38,27 @@ describe('SessionService', () => {
     const newInstance = new SessionService();
     expect(newInstance.currentRole()).toBe(UserRole.Katilimci);
   });
+
+  describe('canManageCourse', () => {
+    it('Egitim Yoneticisi her kursu yonetebilir (instructorId eslesmese bile)', () => {
+      service.setRole(UserRole.EgitimYoneticisi);
+      expect(service.canManageCourse('herhangi-bir-egitmen-id')).toBeTrue();
+    });
+
+    it('Egitmen, kendi instructorId sine esit olan kursu yonetebilir', () => {
+      service.setRole(UserRole.Egitmen);
+      const ownInstructorId = service.currentUser().instructorId!;
+      expect(service.canManageCourse(ownInstructorId)).toBeTrue();
+    });
+
+    it('Egitmen, baska bir egitmenin kursunu yonetemez', () => {
+      service.setRole(UserRole.Egitmen);
+      expect(service.canManageCourse('baska-egitmenin-id')).toBeFalse();
+    });
+
+    it('Katilimci hicbir kursu yonetemez', () => {
+      service.setRole(UserRole.Katilimci);
+      expect(service.canManageCourse('herhangi-bir-egitmen-id')).toBeFalse();
+    });
+  });
 });

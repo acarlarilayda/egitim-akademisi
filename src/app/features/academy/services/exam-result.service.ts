@@ -56,6 +56,8 @@ export class ExamResultService extends AsyncEntityService<ExamResult> {
    * @param wrongCount Yanlış sayısı
    * @param totalQuestionCount Sınavdaki toplam soru sayısı (yüzde hesabı için)
    * @param passingScore Kursun geçme notu (0-100 arası)
+   * @param courseInstructorId Sınavın bağlı olduğu kursun eğitmen ID'si.
+   *   Eğitim Yöneticisi tüm kursların sonuçlarını girebilir.
    */
   create(
     examId: string,
@@ -63,9 +65,14 @@ export class ExamResultService extends AsyncEntityService<ExamResult> {
     correctCount: number,
     wrongCount: number,
     totalQuestionCount: number,
-    passingScore: number
+    passingScore: number,
+    courseInstructorId: string
   ): Observable<ExamResult> {
     return this.runAsync(() => {
+      if (!this.sessionService.canManageCourse(courseInstructorId)) {
+        throw new Error('Bu kursun sonuçlarını girme yetkiniz yok. Sadece kendi kurslarınızın sonuçlarını girebilirsiniz.');
+      }
+
       const score = totalQuestionCount > 0 ? Math.round((correctCount / totalQuestionCount) * 100) : 0;
       const isPassed = score >= passingScore;
 
