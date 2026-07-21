@@ -31,7 +31,7 @@ export const routes: Routes = [
     path: 'kurslar',
     component: CourseListComponent,
     canActivate: [roleGuard],
-    data: { roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen] },
+    data: { roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen, UserRole.Katilimci] },
   },
   {
     path: 'kurslar/yeni',
@@ -43,7 +43,7 @@ export const routes: Routes = [
     path: 'kurslar/:id',
     component: CourseDetailComponent,
     canActivate: [roleGuard],
-    data: { roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen] },
+    data: { roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen, UserRole.Katilimci] },
   },
   {
     path: 'moduller',
@@ -73,13 +73,13 @@ export const routes: Routes = [
     path: 'sonuclar',
     component: ExamResultListComponent,
     canActivate: [roleGuard],
-    data: { roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen] },
+    data: { roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen, UserRole.Katilimci] },
   },
   {
     path: 'sertifikalar',
     component: CertificateEligibilityListComponent,
     canActivate: [roleGuard],
-    data: { roles: [UserRole.EgitimYoneticisi] },
+    data: { roles: [UserRole.EgitimYoneticisi, UserRole.Katilimci] },
   },
   {
     path: 'audit-log',

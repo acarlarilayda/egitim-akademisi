@@ -7,7 +7,8 @@ import { ParticipantService } from '../../services/participant.service';
 import { CertificateEligibility } from '../../models/certificate-eligibility.model';
 import { Course } from '../../models/course.model';
 import { Participant } from '../../models/participant.model';
-import { CertificateEligibilityStatus } from '../../../../core/models/enums';
+import { CertificateEligibilityStatus, UserRole } from '../../../../core/models/enums';
+import { SessionService } from '../../../../core/services/session.service';
 import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
@@ -15,6 +16,7 @@ import { CertificateEvaluateFormComponent } from '../certificate-evaluate-form/c
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { PermissionDirective } from '../../../../shared/directives/permission.directive';
 
 @Component({
   selector: 'app-certificate-eligibility-list',
@@ -29,11 +31,15 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
     DebounceDirective,
     StatusLabelPipe,
     ConfirmDialogComponent,
+    PermissionDirective,
   ],
   templateUrl: './certificate-eligibility-list.component.html',
   styleUrl: './certificate-eligibility-list.component.scss',
 })
 export class CertificateEligibilityListComponent implements OnInit {
+  /** Değerlendirme ve sertifika verme yalnızca Eğitim Yöneticisi'ne açıktır. */
+  protected readonly manageRoles = [UserRole.EgitimYoneticisi];
+
   eligibilities: CertificateEligibility[] = [];
   courses: Course[] = [];
   participants: Participant[] = [];
@@ -67,7 +73,8 @@ export class CertificateEligibilityListComponent implements OnInit {
   constructor(
     private certificateEligibilityService: CertificateEligibilityService,
     private courseService: CourseService,
-    private participantService: ParticipantService
+    private participantService: ParticipantService,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit(): void {
@@ -107,12 +114,15 @@ export class CertificateEligibilityListComponent implements OnInit {
 
   get filteredEligibilities(): CertificateEligibility[] {
     const term = this.searchTerm.trim().toLowerCase();
+    const isKatilimci = this.sessionService.currentRole() === UserRole.Katilimci;
+    const ownParticipantId = this.sessionService.currentParticipantId();
 
     return this.eligibilities.filter((eligibility) => {
+      const matchesOwnership = !isKatilimci || eligibility.participantId === ownParticipantId;
       const name = this.participantName(eligibility.participantId).toLowerCase();
       const matchesSearch = !term || name.includes(term);
       const matchesStatus = !this.statusFilter || eligibility.status === this.statusFilter;
-      return matchesSearch && matchesStatus;
+      return matchesOwnership && matchesSearch && matchesStatus;
     });
   }
 

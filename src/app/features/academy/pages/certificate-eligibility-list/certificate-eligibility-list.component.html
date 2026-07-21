@@ -1,7 +1,7 @@
 <div class="page">
   <div class="page__header">
     <h1>Sertifikalar</h1>
-    <button type="button" class="page__new-button" (click)="openEvaluateDialog()">+ Değerlendir</button>
+    <button type="button" class="page__new-button" *appPermission="manageRoles" (click)="openEvaluateDialog()">+ Değerlendir</button>
   </div>
 
   <div class="page__filters">
@@ -16,7 +16,7 @@
 
     <select class="page__status-filter" [(ngModel)]="statusFilter">
       <option value="">Tüm Durumlar</option>
-      <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+     <option *ngFor="let status of statusOptions" [value]="status">{{ status | statusLabel }}</option>
     </select>
   </div>
 
@@ -49,14 +49,16 @@
     </ng-template>
 
     <ng-template dtCell="actions" let-row="row">
-      <button
-        type="button"
-        class="issue-button"
-        *ngIf="row.status === Status.Eligible"
-        (click)="issueCertificate(row.id)"
-      >
-        Sertifika Ver
-      </button>
+      <ng-container *appPermission="manageRoles">
+        <button
+          type="button"
+          class="issue-button"
+          *ngIf="row.status === Status.Eligible"
+          (click)="issueCertificate(row.id)"
+        >
+          Sertifika Ver
+        </button>
+      </ng-container>
     </ng-template>
   </app-data-table>
 </div>

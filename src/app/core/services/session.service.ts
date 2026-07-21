@@ -14,14 +14,22 @@ export interface DemoUser {
   fullName: string;
   role: UserRole;
   instructorId?: string;
+  participantId?: string;
+}
+
+export interface DemoUser {
+  id: string;
+  fullName: string;
+  role: UserRole;
+  instructorId?: string;
+  participantId?: string;
 }
 
 export const DEMO_USERS: DemoUser[] = [
   { id: 'demo-egitim-yoneticisi', fullName: 'Elif Yıldız', role: UserRole.EgitimYoneticisi },
   { id: 'demo-egitmen', fullName: 'Mert Kaya', role: UserRole.Egitmen, instructorId: 'inst-2' },
-  { id: 'demo-katilimci', fullName: 'Ayşe Demir', role: UserRole.Katilimci },
+  { id: 'demo-katilimci', fullName: 'Ayşe Demir', role: UserRole.Katilimci, participantId: 'part-7' },
 ];
-
 /**
  * Uygulamanın "kim olarak giriş yapıldığı" bilgisini tutan servis.
  *
@@ -37,6 +45,8 @@ export class SessionService {
 
   readonly currentUser = this.activeUser.asReadonly();
   readonly currentRole = computed(() => this.activeUser().role);
+  /** Aktif kullanıcı Katılımcı ise kendi Participant kaydının id'si, değilse null. */
+  readonly currentParticipantId = computed(() => this.activeUser().participantId ?? null);
 
   readonly demoUsers = DEMO_USERS;
 
@@ -73,6 +83,22 @@ export class SessionService {
     }
 
     return false;
+  }
+
+  /**
+   * Aktif kullanıcının, verilen katılımcı id'sine ait bir kaydı görüp
+   * göremeyeceğini belirler. Eğitim Yöneticisi ve Eğitmen tüm katılımcı
+   * kayıtlarını görebilir; Katılımcı sadece kendi `participantId`'sine
+   * ait kayıtları görebilir.
+   */
+  canViewParticipantRecord(participantId: string): boolean {
+    const user = this.activeUser();
+
+    if (user.role === UserRole.Katilimci) {
+      return user.participantId === participantId;
+    }
+
+    return true;
   }
 
   private getInitialUser(): DemoUser {

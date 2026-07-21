@@ -9,11 +9,13 @@ import { ExamResult } from '../../models/exam-result.model';
 import { Exam } from '../../models/exam.model';
 import { Participant } from '../../models/participant.model';
 import { Course } from '../../models/course.model';
-import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
-import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
+import { SessionService } from '../../../../core/services/session.service';
+import { UserRole } from '../../../../core/models/enums';
+import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 import { ExamResultFormComponent } from '../exam-result-form/exam-result-form.component';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
+import { PermissionDirective } from '../../../../shared/directives/permission.directive';
 
 @Component({
   selector: 'app-exam-result-list',
@@ -26,11 +28,15 @@ import { DebounceDirective } from '../../../../shared/directives/debounce.direct
     DialogComponent,
     ExamResultFormComponent,
     DebounceDirective,
+    PermissionDirective,
   ],
   templateUrl: './exam-result-list.component.html',
   styleUrl: './exam-result-list.component.scss',
 })
 export class ExamResultListComponent implements OnInit {
+  /** Sonuç kaydetme yalnızca Eğitim Yöneticisi ve Eğitmen'e açıktır. */
+  protected readonly manageRoles = [UserRole.EgitimYoneticisi, UserRole.Egitmen];
+
   results: ExamResult[] = [];
   exams: Exam[] = [];
   participants: Participant[] = [];
@@ -59,7 +65,8 @@ export class ExamResultListComponent implements OnInit {
     private examResultService: ExamResultService,
     private examService: ExamService,
     private participantService: ParticipantService,
-    private courseService: CourseService
+    private courseService: CourseService,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit(): void {
@@ -103,15 +110,18 @@ export class ExamResultListComponent implements OnInit {
 
   get filteredResults(): ExamResult[] {
     const term = this.searchTerm.trim().toLowerCase();
+    const isKatilimci = this.sessionService.currentRole() === UserRole.Katilimci;
+    const ownParticipantId = this.sessionService.currentParticipantId();
 
     return this.results.filter((result) => {
+      const matchesOwnership = !isKatilimci || result.participantId === ownParticipantId;
       const name = this.participantName(result.participantId).toLowerCase();
       const matchesSearch = !term || name.includes(term);
       const matchesResult =
         !this.resultFilter ||
         (this.resultFilter === 'gecti' && result.isPassed) ||
         (this.resultFilter === 'kaldi' && !result.isPassed);
-      return matchesSearch && matchesResult;
+      return matchesOwnership && matchesSearch && matchesResult;
     });
   }
 

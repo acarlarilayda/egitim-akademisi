@@ -16,7 +16,7 @@
 
     <select class="page__status-filter" [(ngModel)]="statusFilter">
       <option value="">Tüm Durumlar</option>
-      <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+      <option *ngFor="let status of statusOptions" [value]="status">{{ status | statusLabel }}</option>
     </select>
   </div>
 

@@ -151,6 +151,16 @@ export const demoParticipants: Participant[] = [
     createdAt: '2026-02-20T10:00:00.000Z',
     updatedAt: '2026-02-20T10:00:00.000Z',
   },
+  {
+    // Demo "Katılımcı" oturumunun (session.service.ts -> DEMO_USERS) karşılığı.
+    id: 'part-7',
+    fullName: 'Ayşe Demir',
+    email: 'ayse.demir@example.com',
+    phone: '0538 777 88 99',
+    isActive: true,
+    createdAt: '2026-02-21T10:00:00.000Z',
+    updatedAt: '2026-02-21T10:00:00.000Z',
+  },
 ];
 
 export const demoEnrollments: Enrollment[] = [
@@ -206,6 +216,16 @@ export const demoEnrollments: Enrollment[] = [
     status: EnrollmentStatus.Cancelled,
     enrolledAt: '2026-02-24T09:00:00.000Z',
     createdAt: '2026-02-24T09:00:00.000Z',
+    updatedAt: '2026-02-25T09:00:00.000Z',
+  },
+  {
+    // part-7'nin course-1'deki aktif kaydı.
+    id: 'enr-7',
+    courseId: 'course-1',
+    participantId: 'part-7',
+    status: EnrollmentStatus.Active,
+    enrolledAt: '2026-02-25T09:00:00.000Z',
+    createdAt: '2026-02-25T09:00:00.000Z',
     updatedAt: '2026-02-25T09:00:00.000Z',
   },
 ];
@@ -299,6 +319,18 @@ export const demoExamResults: ExamResult[] = [
     isPassed: false,
     createdAt: '2026-03-05T14:30:00.000Z',
     updatedAt: '2026-03-05T14:30:00.000Z',
+  },
+  {
+    // part-7'nin exam-1 sonucu.
+    id: 'result-3',
+    examId: 'exam-1',
+    participantId: 'part-7',
+    correctCount: 2,
+    wrongCount: 0,
+    score: 100,
+    isPassed: true,
+    createdAt: '2026-03-06T14:00:00.000Z',
+    updatedAt: '2026-03-06T14:00:00.000Z',
   },
 ];
 
@@ -408,6 +440,18 @@ export const demoCertificateEligibilities: CertificateEligibility[] = [
     issuedAt: '2025-12-20T09:00:00.000Z',
     createdAt: '2025-12-17T09:00:00.000Z',
     updatedAt: '2025-12-20T09:00:00.000Z',
+  },
+  {
+    // part-7'nin sertifika uygunluk durumu.
+    id: 'cert-4',
+    courseId: 'course-1',
+    participantId: 'part-7',
+    attendanceRate: 100,
+    examPassed: true,
+    status: CertificateEligibilityStatus.Eligible,
+    issuedAt: null,
+    createdAt: '2026-03-07T09:00:00.000Z',
+    updatedAt: '2026-03-07T09:00:00.000Z',
   },
 ];
 

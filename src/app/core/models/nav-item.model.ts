@@ -14,7 +14,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'Kurslar',
     route: '/kurslar',
     icon: '📚',
-    roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen],
+    roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen, UserRole.Katilimci],
   },
   {
     label: 'Modüller',
@@ -38,13 +38,13 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'Sonuçlar',
     route: '/sonuclar',
     icon: '✅',
-    roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen],
+    roles: [UserRole.EgitimYoneticisi, UserRole.Egitmen, UserRole.Katilimci],
   },
   {
     label: 'Sertifikalar',
     route: '/sertifikalar',
     icon: '🎓',
-    roles: [UserRole.EgitimYoneticisi],
+    roles: [UserRole.EgitimYoneticisi, UserRole.Katilimci],
   },
   {
     label: 'Audit Log',

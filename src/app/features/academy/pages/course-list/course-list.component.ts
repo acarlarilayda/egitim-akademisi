@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CourseService } from '../../services/course.service';
 import { InstructorService } from '../../services/instructor.service';
+import { EnrollmentService } from '../../services/enrollment.service';
 import { Course } from '../../models/course.model';
 import { Instructor } from '../../models/instructor.model';
 import { CourseStatus, UserRole } from '../../../../core/models/enums';
-import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
+import { SessionService } from '../../../../core/services/session.service';import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 import { CourseFormComponent } from '../course-form/course-form.component';
@@ -48,6 +49,9 @@ export class CourseListComponent implements OnInit {
   instructors: Instructor[] = [];
   errorMessage: string | null = null;
 
+  /** Katılımcı rolünde, aktif kullanıcının kayıtlı olduğu kurs id'leri. */
+  private enrolledCourseIds: Set<string> | null = null;
+
   searchTerm = '';
   statusFilter = '';
   readonly statusOptions = Object.values(CourseStatus);
@@ -67,11 +71,28 @@ export class CourseListComponent implements OnInit {
 
   constructor(
     private courseService: CourseService,
-    private instructorService: InstructorService
+    private instructorService: InstructorService,
+    private enrollmentService: EnrollmentService,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit(): void {
-    this.load();
+    // Katılımcı ise önce kendi kayıtlarını çekip hangi kursları
+    // görebileceğini belirliyoruz; kurs listesi ona göre filtrelenecek.
+    if (this.sessionService.currentRole() === UserRole.Katilimci) {
+      const participantId = this.sessionService.currentParticipantId();
+      this.enrollmentService.getAll().subscribe({
+        next: (enrollments) => {
+          this.enrolledCourseIds = new Set(
+            enrollments.filter((e) => e.participantId === participantId).map((e) => e.courseId)
+          );
+          this.load();
+        },
+      });
+    } else {
+      this.load();
+    }
+
     this.instructorService.getAll().subscribe({
       next: (instructors) => (this.instructors = instructors),
     });
@@ -92,7 +113,8 @@ export class CourseListComponent implements OnInit {
     return this.courses.filter((course) => {
       const matchesSearch = !term || course.title.toLowerCase().includes(term);
       const matchesStatus = !this.statusFilter || course.status === this.statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesEnrollment = !this.enrolledCourseIds || this.enrolledCourseIds.has(course.id);
+      return matchesSearch && matchesStatus && matchesEnrollment;
     });
   }
 

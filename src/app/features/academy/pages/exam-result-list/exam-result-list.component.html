@@ -1,7 +1,7 @@
 <div class="page">
   <div class="page__header">
     <h1>Sonuçlar</h1>
-    <button type="button" class="page__new-button" (click)="openCreateDialog()">+ Sonuç Kaydet</button>
+    <button type="button" class="page__new-button" *appPermission="manageRoles" (click)="openCreateDialog()">+ Sonuç Kaydet</button>
   </div>
 
   <div class="page__filters">
