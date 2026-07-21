@@ -16,14 +16,16 @@
       <h1>{{ c.title }}</h1>
       <div class="page__header-status">
         <span class="status-badge" [attr.data-status]="c.status">{{ c.status | statusLabel }}</span>
-        <button
-          type="button"
-          class="status-action-button"
-          *ngIf="nextCourseStatus"
-          (click)="openStatusConfirm()"
-        >
-          {{ courseStatusActionLabel }}
-        </button>
+        <ng-container *appPermission="manageRoles">
+          <button
+            type="button"
+            class="status-action-button"
+            *ngIf="nextCourseStatus"
+            (click)="openStatusConfirm()"
+          >
+            {{ courseStatusActionLabel }}
+          </button>
+        </ng-container>
       </div>
     </div>
 
@@ -81,7 +83,7 @@
             <th>Katılımcı</th>
             <th>Durum</th>
             <th>Kayıt Tarihi</th>
-            <th></th>
+            <th *appPermission="manageRoles"></th>
           </tr>
         </thead>
         <tbody>
@@ -89,7 +91,7 @@
             <td>{{ row.participantName }}</td>
             <td><span class="status-badge" [attr.data-status]="row.status">{{ row.status | statusLabel }}</span></td>
             <td>{{ row.enrolledAt | date: 'dd.MM.yyyy' }}</td>
-            <td class="tab-table__actions">
+            <td class="tab-table__actions" *appPermission="manageRoles">
               <button type="button" class="link-button" (click)="openAttendanceDialog(row.participantId)">
                 Katılım İşle
               </button>

@@ -12,9 +12,9 @@ Bu doküman, projede yer alacak tüm ekranları ve bağlı oldukları route'lar�
 
 | Ekran | Route | Erişim |
 |---|---|---|
-| Kurs Listesi | `/kurslar` | Eğitim Yöneticisi, Eğitmen |
+| Kurs Listesi | `/kurslar` | Eğitim Yöneticisi, Eğitmen, Katılımcı (salt-okunur, sadece kayıtlı olduğu kurslar) |
 | Yeni Kurs | `/kurslar/yeni` | Eğitim Yöneticisi |
-| Kurs Detayı | `/kurslar/:id` | Eğitim Yöneticisi, Eğitmen |
+| Kurs Detayı | `/kurslar/:id` | Eğitim Yöneticisi, Eğitmen, Katılımcı (salt-okunur; Katılımcılar/Sonuçlar sekmelerinde sadece kendi kaydı) |
 
 ## Ders/Modül Yönetimi
 
@@ -39,13 +39,13 @@ Bu doküman, projede yer alacak tüm ekranları ve bağlı oldukları route'lar�
 
 | Ekran | Route | Erişim |
 |---|---|---|
-| Sonuç Listesi | `/sonuclar` | Eğitim Yöneticisi, Eğitmen |
+| Sonuç Listesi | `/sonuclar` | Eğitim Yöneticisi, Eğitmen (kayıt/düzenleme); Katılımcı (salt-okunur, sadece kendi sonuçları) |
 
 ## Sertifika Uygunluğu
 
 | Ekran | Route | Erişim |
 |---|---|---|
-| Sertifika Listesi | `/sertifikalar` | Eğitim Yöneticisi |
+| Sertifika Listesi | `/sertifikalar` | Eğitim Yöneticisi (değerlendirme/verme); Katılımcı (salt-okunur, sadece kendi durumu) |
 
 ## Raporlama ve Audit Log
 
@@ -58,3 +58,4 @@ Bu doküman, projede yer alacak tüm ekranları ve bağlı oldukları route'lar�
 - Katılım takibi ayrı bir route yerine kurs/katılımcı detay ekranları içinde gösterilecektir.
 - Tüm liste ekranlarında pagination, arama, filtreleme ve sıralama bulunacaktır.
 - Kritik işlemler (silme, iptal, onay) confirm dialog ile korunacaktır.
+- **Katılımcı rolü** salt-okunur bir "öğrenci portalı" görünümündedir: Modüller, Katılımcılar (yönetim listesi), Sınavlar/Soru Bankası ve Audit Log ekranlarına erişemez; Kurslar, Sonuçlar ve Sertifikalar ekranlarında ise sadece kendi kayıtlarını/kendi verisini görür, oluşturma/düzenleme/onay/durum değiştirme aksiyonları kendisine gösterilmez.

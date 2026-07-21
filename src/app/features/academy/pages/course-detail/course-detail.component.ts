@@ -12,11 +12,13 @@ import { Course } from '../../models/course.model';
 import { CourseModule, Lesson } from '../../models/course-module.model';
 import { Enrollment } from '../../models/enrollment.model';
 import { ExamResult } from '../../models/exam-result.model';
-import { CourseStatus, EnrollmentStatus } from '../../../../core/models/enums';
+import { CourseStatus, EnrollmentStatus, UserRole } from '../../../../core/models/enums';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { AttendanceMarkFormComponent } from '../attendance-mark-form/attendance-mark-form.component';
 import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
+import { PermissionDirective } from '../../../../shared/directives/permission.directive';
+import { SessionService } from '../../../../core/services/session.service';
 
 type DetailTab = 'modules' | 'participants' | 'results';
 
@@ -84,11 +86,16 @@ const ENROLLMENT_ACTIONS: Record<EnrollmentStatus, EnrollmentAction[]> = {
 @Component({
   selector: 'app-course-detail',
   standalone: true,
-imports: [CommonModule, RouterLink, DialogComponent, ConfirmDialogComponent, AttendanceMarkFormComponent, StatusLabelPipe],
+imports: [CommonModule, RouterLink, DialogComponent, ConfirmDialogComponent, AttendanceMarkFormComponent, StatusLabelPipe, PermissionDirective],
   templateUrl: './course-detail.component.html',
   styleUrl: './course-detail.component.scss',
 })
 export class CourseDetailComponent implements OnInit {
+  /** Kurs durum geçişi, katılım onay/iptal ve katılım işleme (attendance)
+   * yalnızca Eğitim Yöneticisi ve Eğitmen'e açıktır; Katılımcı kurs
+   * detayını sadece görüntüleyebilir. */
+  protected readonly manageRoles = [UserRole.EgitimYoneticisi, UserRole.Egitmen];
+
   course: Course | null = null;
   modules: CourseModule[] = [];
   lessons: Lesson[] = [];
@@ -121,7 +128,8 @@ export class CourseDetailComponent implements OnInit {
     private enrollmentService: EnrollmentService,
     private participantService: ParticipantService,
     private examService: ExamService,
-    private examResultService: ExamResultService
+    private examResultService: ExamResultService,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit(): void {
@@ -162,12 +170,20 @@ export class CourseDetailComponent implements OnInit {
         this.modules = modules;
         this.lessons = lessons.filter((l) => moduleIds.has(l.moduleId));
 
+        // Katılımcı rolünde, kurs detayındaki "Katılımcılar" ve "Sonuçlar"
+        // sekmeleri diğer katılımcıların bilgilerini sızdırmamalı; sadece
+        // aktif kullanıcının kendi kaydı gösterilir.
+        const isKatilimci = this.sessionService.currentRole() === UserRole.Katilimci;
+        const ownParticipantId = this.sessionService.currentParticipantId();
+
         this.enrollmentRows = enrollments
           .filter((e) => e.courseId === this.courseId)
+          .filter((e) => !isKatilimci || e.participantId === ownParticipantId)
           .map((e) => ({ ...e, participantName: participantNameById.get(e.participantId) ?? e.participantId }));
 
         this.examResultRows = examResults
           .filter((r) => courseExamIds.has(r.examId))
+          .filter((r) => !isKatilimci || r.participantId === ownParticipantId)
           .map((r) => ({
             ...r,
             participantName: participantNameById.get(r.participantId) ?? r.participantId,
