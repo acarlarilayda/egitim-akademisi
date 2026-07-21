@@ -19,6 +19,7 @@ import { AttendanceMarkFormComponent } from '../attendance-mark-form/attendance-
 import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
 import { PermissionDirective } from '../../../../shared/directives/permission.directive';
 import { SessionService } from '../../../../core/services/session.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 type DetailTab = 'modules' | 'participants' | 'results';
 
@@ -129,7 +130,8 @@ export class CourseDetailComponent implements OnInit {
     private participantService: ParticipantService,
     private examService: ExamService,
     private examResultService: ExamResultService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -256,10 +258,13 @@ export class CourseDetailComponent implements OnInit {
       next: () => {
         this.statusConfirmOpen = false;
         this.load();
+        this.notificationService.success('Kurs durumu güncellendi.');
       },
       error: (err) => {
-        this.statusActionError = err?.message ?? 'Durum değiştirilirken bir hata oluştu.';
+        const message = err?.message ?? 'Durum değiştirilirken bir hata oluştu.';
+        this.statusActionError = message;
         this.statusConfirmOpen = false;
+        this.notificationService.error(message);
       },
     });
   }
@@ -291,10 +296,13 @@ export class CourseDetailComponent implements OnInit {
         this.enrollmentConfirmOpen = false;
         this.pendingEnrollmentAction = null;
         this.load();
+        this.notificationService.success('Katılım durumu güncellendi.');
       },
       error: (err) => {
-        this.enrollmentActionError = err?.message ?? 'Durum değiştirilirken bir hata oluştu.';
+        const message = err?.message ?? 'Durum değiştirilirken bir hata oluştu.';
+        this.enrollmentActionError = message;
         this.enrollmentConfirmOpen = false;
+        this.notificationService.error(message);
       },
     });
   }

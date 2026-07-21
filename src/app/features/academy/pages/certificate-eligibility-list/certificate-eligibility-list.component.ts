@@ -9,6 +9,7 @@ import { Course } from '../../models/course.model';
 import { Participant } from '../../models/participant.model';
 import { CertificateEligibilityStatus, UserRole } from '../../../../core/models/enums';
 import { SessionService } from '../../../../core/services/session.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
@@ -74,7 +75,8 @@ export class CertificateEligibilityListComponent implements OnInit {
     private certificateEligibilityService: CertificateEligibilityService,
     private courseService: CourseService,
     private participantService: ParticipantService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -159,11 +161,14 @@ export class CertificateEligibilityListComponent implements OnInit {
         this.issueConfirmOpen = false;
         this.pendingIssueId = null;
         this.load();
+        this.notificationService.success('Sertifika verildi.');
       },
       error: (err) => {
-        this.errorMessage = err?.message ?? 'Sertifika verilirken bir hata oluştu.';
+        const message = err?.message ?? 'Sertifika verilirken bir hata oluştu.';
+        this.errorMessage = message;
         this.issueConfirmOpen = false;
         this.pendingIssueId = null;
+        this.notificationService.error(message);
       },
     });
   }

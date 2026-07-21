@@ -8,13 +8,15 @@ import { EnrollmentService } from '../../services/enrollment.service';
 import { Course } from '../../models/course.model';
 import { Instructor } from '../../models/instructor.model';
 import { CourseStatus, UserRole } from '../../../../core/models/enums';
-import { SessionService } from '../../../../core/services/session.service';import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
+import { SessionService } from '../../../../core/services/session.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
 import { DialogComponent } from '../../../../shared/components/dialog/dialog.component';
 import { CourseFormComponent } from '../course-form/course-form.component';
 import { DebounceDirective } from '../../../../shared/directives/debounce.directive';
 import { PermissionDirective } from '../../../../shared/directives/permission.directive';
 import { StatusLabelPipe } from '../../../../shared/pipes/status-label.pipe';
+import { DataTableComponent, TableColumn } from '../../../../shared/components/data-table/data-table.component';
 
 /**
  * Kurs listesi ekranı (/kurslar).
@@ -73,7 +75,8 @@ export class CourseListComponent implements OnInit {
     private courseService: CourseService,
     private instructorService: InstructorService,
     private enrollmentService: EnrollmentService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -133,8 +136,10 @@ export class CourseListComponent implements OnInit {
   }
 
   onSaved(): void {
+    const message = this.editingCourse ? 'Kurs güncellendi.' : 'Kurs oluşturuldu.';
     this.dialogOpen = false;
     this.load();
+    this.notificationService.success(message);
   }
 
   onDialogClosed(): void {

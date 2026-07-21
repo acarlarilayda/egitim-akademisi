@@ -4,6 +4,7 @@ import { InstructorService } from '../../services/instructor.service';
 import { Instructor } from '../../models/instructor.model';
 import { CourseFormComponent } from '../course-form/course-form.component';
 import { HasUnsavedChanges } from '../../../../core/guards/unsaved-changes.guard';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 /**
  * Yeni kurs oluşturma ekranı (/kurslar/yeni).
@@ -31,7 +32,8 @@ export class CourseCreateComponent implements OnInit, HasUnsavedChanges {
 
   constructor(
     private instructorService: InstructorService,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -49,6 +51,7 @@ export class CourseCreateComponent implements OnInit, HasUnsavedChanges {
 
   onSaved(): void {
     this.leavingIntentionally = true;
+    this.notificationService.success('Kurs oluşturuldu.');
     this.router.navigate(['/kurslar']);
   }
 
