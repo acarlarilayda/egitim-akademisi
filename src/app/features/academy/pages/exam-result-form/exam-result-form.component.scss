@@ -4,6 +4,12 @@
   gap: var(--space-md);
 }
 
+@media (max-width: 768px) {
+  .exam-result-form__row {
+    grid-template-columns: 1fr;
+  }
+}
+
 .exam-result-form__form-error {
   color: var(--color-danger);
   font-size: var(--font-size-sm);

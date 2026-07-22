@@ -14,34 +14,36 @@
     [message]="emptyMessage"
   ></app-empty-state>
 
-  <table class="data-table__table" *ngIf="!loading && !errorMessage && rows.length > 0">
-    <thead>
-      <tr>
-        <th
-          *ngFor="let column of columns"
-          [class.data-table__header--sortable]="column.sortable"
-          (click)="onSort(column)"
-        >
-          {{ column.label }}
-          <span class="data-table__sort-icon" *ngIf="sortKey === column.key">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let row of pagedRows; trackBy: trackByFn">
-        <td *ngFor="let column of columns">
-          <ng-container *ngIf="getCellTemplate(column.key) as cellTemplate; else defaultCell">
-            <ng-container
-              *ngTemplateOutlet="cellTemplate.templateRef; context: { $implicit: cellValue(row, column.key), row: row }"
-            ></ng-container>
-          </ng-container>
-          <ng-template #defaultCell>{{ cellValue(row, column.key) }}</ng-template>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="data-table__scroll" *ngIf="!loading && !errorMessage && rows.length > 0">
+    <table class="data-table__table">
+      <thead>
+        <tr>
+          <th
+            *ngFor="let column of columns"
+            [class.data-table__header--sortable]="column.sortable"
+            (click)="onSort(column)"
+          >
+            {{ column.label }}
+            <span class="data-table__sort-icon" *ngIf="sortKey === column.key">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of pagedRows; trackBy: trackByFn">
+          <td *ngFor="let column of columns">
+            <ng-container *ngIf="getCellTemplate(column.key) as cellTemplate; else defaultCell">
+              <ng-container
+                *ngTemplateOutlet="cellTemplate.templateRef; context: { $implicit: cellValue(row, column.key), row: row }"
+              ></ng-container>
+            </ng-container>
+            <ng-template #defaultCell>{{ cellValue(row, column.key) }}</ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <div class="data-table__pagination" *ngIf="!loading && !errorMessage && showPagination">
     <button
