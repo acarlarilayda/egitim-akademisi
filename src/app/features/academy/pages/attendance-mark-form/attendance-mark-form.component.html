@@ -1,3 +1,29 @@
+<div class="attendance-mark-form__history">
+  <h3 class="attendance-mark-form__history-title">Katılım Geçmişi</h3>
+
+  <p class="attendance-mark-form__loading" *ngIf="loadingRecords">Yükleniyor...</p>
+
+  <app-empty-state
+    *ngIf="!loadingRecords && existingRecords.length === 0"
+    message="Bu katılımcı için henüz katılım kaydı yok."
+  ></app-empty-state>
+
+  <ul class="attendance-mark-form__record-list" *ngIf="!loadingRecords && existingRecords.length > 0">
+    <li *ngFor="let record of existingRecords" class="attendance-mark-form__record">
+      <span class="attendance-mark-form__record-lesson">{{ lessonTitle(record.lessonId) }}</span>
+      <span class="attendance-mark-form__record-date">{{ record.date | date: 'dd.MM.yyyy' }}</span>
+      <span
+        class="attendance-mark-form__record-status"
+        [class.attendance-mark-form__record-status--absent]="!record.attended"
+      >
+        {{ record.attended ? 'Katıldı' : 'Katılmadı' }}
+      </span>
+    </li>
+  </ul>
+</div>
+
+<h3 class="attendance-mark-form__form-title">Yeni Katılım Kaydı</h3>
+
 <form [formGroup]="form" (ngSubmit)="submit()" class="attendance-mark-form">
   <app-form-field
     label="Ders"

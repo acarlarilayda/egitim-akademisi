@@ -1,24 +1,28 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AttendanceRecordService } from '../../services/attendance-record.service';
+import { AttendanceRecord } from '../../models/attendance-record.model';
 import { Lesson } from '../../models/course-module.model';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 
 /**
- * Katılım işleme formu (bkz. dokümanın 5. bölümü: "Katılım takibi: ...
- * oluşturma ... doğrulama akışlarını kapsar."). Ayrı bir route yerine
- * Kurs Detay ekranındaki Katılımcılar sekmesine gömülüdür, çünkü dokümanın
- * 6. bölümündeki route listesinde katılım takibi için ayrı bir sayfa yoktur.
+ * Katılım işleme formu. Ayrı bir route yerine Kurs Detay ekranındaki
+ * Katılımcılar sekmesine gömülüdür.
+ *
+ * Sadece yeni kayıt ekleme formu değil, katılımcının o kurstaki mevcut
+ * katılım geçmişini de gösterir; aksi halde kayıtlar (sertifika uygunluğu
+ * hesaplamasında kullanılsa da) kullanıcı arayüzünde hiç görünür olmazdı.
  */
 @Component({
   selector: 'app-attendance-mark-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent, EmptyStateComponent],
   templateUrl: './attendance-mark-form.component.html',
   styleUrl: './attendance-mark-form.component.scss',
 })
-export class AttendanceMarkFormComponent {
+export class AttendanceMarkFormComponent implements OnInit {
   @Input() courseId!: string;
   @Input() participantId!: string;
   @Input() lessons: Lesson[] = [];
@@ -27,6 +31,9 @@ export class AttendanceMarkFormComponent {
 
   submitting = false;
   errorMessage: string | null = null;
+
+  existingRecords: AttendanceRecord[] = [];
+  loadingRecords = false;
 
   readonly form = this.fb.group({
     lessonId: ['', Validators.required],
@@ -38,6 +45,24 @@ export class AttendanceMarkFormComponent {
     private fb: FormBuilder,
     private attendanceRecordService: AttendanceRecordService
   ) {}
+
+  ngOnInit(): void {
+    this.loadingRecords = true;
+    this.attendanceRecordService.getByCourseAndParticipant(this.courseId, this.participantId).subscribe({
+      next: (records) => {
+        this.existingRecords = [...records].sort((a, b) => b.date.localeCompare(a.date));
+        this.loadingRecords = false;
+      },
+      error: () => {
+        this.loadingRecords = false;
+      },
+    });
+  }
+
+  /** Bir lessonId'ye karşılık gelen ders başlığını döner. */
+  lessonTitle(lessonId: string): string {
+    return this.lessons.find((lesson) => lesson.id === lessonId)?.title ?? lessonId;
+  }
 
   submit(): void {
     this.errorMessage = null;

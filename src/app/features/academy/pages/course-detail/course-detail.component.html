@@ -134,7 +134,7 @@
   </ng-container>
 </div>
 
-<app-dialog [open]="attendanceDialogOpen" title="Katılım İşle" (closed)="onAttendanceDialogClosed()">
+<app-dialog [open]="attendanceDialogOpen" title="Katılım Takibi" (closed)="onAttendanceDialogClosed()">
   <app-attendance-mark-form
     *ngIf="attendanceParticipantId"
     [courseId]="course?.id ?? ''"

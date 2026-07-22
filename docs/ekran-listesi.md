@@ -55,7 +55,7 @@ Bu doküman, projede yer alacak tüm ekranları ve bağlı oldukları route'lar�
 
 ## Notlar
 
-- Katılım takibi ayrı bir route yerine kurs/katılımcı detay ekranları içinde gösterilecektir.
+- Katılım takibi ayrı bir route yerine kurs detayındaki Katılımcılar sekmesinde gösterilir: "Katılım İşle" penceresi hem katılımcının o kurstaki mevcut katılım geçmişini listeler hem de yeni kayıt eklemeyi sağlar.
 - Tüm liste ekranlarında pagination, arama, filtreleme ve sıralama bulunacaktır.
 - Kritik işlemler (silme, iptal, onay) confirm dialog ile korunacaktır.
 - **Katılımcı rolü** salt-okunur bir "öğrenci portalı" görünümündedir: Modüller, Katılımcılar (yönetim listesi), Sınavlar/Soru Bankası ve Audit Log ekranlarına erişemez; Kurslar, Sonuçlar ve Sertifikalar ekranlarında ise sadece kendi kayıtlarını/kendi verisini görür, oluşturma/düzenleme/onay/durum değiştirme aksiyonları kendisine gösterilmez.
