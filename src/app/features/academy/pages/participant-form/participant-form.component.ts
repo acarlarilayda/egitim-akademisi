@@ -4,8 +4,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ParticipantService } from '../../services/participant.service';
 import { Participant } from '../../models/participant.model';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
+import { AutofocusDirective } from '../../../../shared/directives/autofocus.directive';
 import { noWhitespaceValidator } from '../../../../shared/validators/no-whitespace.validator';
-
 /**
  * Katılımcı oluşturma/düzenleme formu. `participant` input'u dolu
  * geldiğinde düzenleme (update), boş/null geldiğinde oluşturma (create)
@@ -14,7 +14,7 @@ import { noWhitespaceValidator } from '../../../../shared/validators/no-whitespa
 @Component({
   selector: 'app-participant-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent, AutofocusDirective],
   templateUrl: './participant-form.component.html',
   styleUrl: './participant-form.component.scss',
 })

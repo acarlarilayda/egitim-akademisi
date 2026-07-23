@@ -5,8 +5,8 @@ import { CourseService } from '../../services/course.service';
 import { Course } from '../../models/course.model';
 import { Instructor } from '../../models/instructor.model';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
-import { noWhitespaceValidator } from '../../../../shared/validators/no-whitespace.validator';
-import { positiveNumberValidator } from '../../../../shared/validators/positive-number.validator';
+import { AutofocusDirective } from '../../../../shared/directives/autofocus.directive';
+import { noWhitespaceValidator } from '../../../../shared/validators/no-whitespace.validator';import { positiveNumberValidator } from '../../../../shared/validators/positive-number.validator';
 import { dateRangeValidator } from '../../../../shared/validators/date-range.validator';
 
 /**
@@ -17,7 +17,7 @@ import { dateRangeValidator } from '../../../../shared/validators/date-range.val
 @Component({
   selector: 'app-course-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent, AutofocusDirective],
   templateUrl: './course-form.component.html',
   styleUrl: './course-form.component.scss',
 })

@@ -5,6 +5,7 @@ import { CourseModuleService } from '../../services/course-module.service';
 import { CourseModule } from '../../models/course-module.model';
 import { Course } from '../../models/course.model';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
+import { AutofocusDirective } from '../../../../shared/directives/autofocus.directive';
 import { noWhitespaceValidator } from '../../../../shared/validators/no-whitespace.validator';
 import { positiveNumberValidator } from '../../../../shared/validators/positive-number.validator';
 
@@ -17,7 +18,7 @@ import { positiveNumberValidator } from '../../../../shared/validators/positive-
 @Component({
   selector: 'app-course-module-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent, AutofocusDirective],
   templateUrl: './course-module-form.component.html',
   styleUrl: './course-module-form.component.scss',
 })

@@ -9,6 +9,7 @@ import { ExamResultService } from '../../services/exam-result.service';
 import { Course } from '../../models/course.model';
 import { Participant } from '../../models/participant.model';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
+import { AutofocusDirective } from '../../../../shared/directives/autofocus.directive';
 
 const MINIMUM_ATTENDANCE_RATE = 80;
 
@@ -32,7 +33,7 @@ interface EligibilityPreview {
 @Component({
   selector: 'app-certificate-evaluate-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent, AutofocusDirective],
   templateUrl: './certificate-evaluate-form.component.html',
   styleUrl: './certificate-evaluate-form.component.scss',
 })

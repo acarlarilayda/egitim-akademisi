@@ -5,8 +5,8 @@ import { AttendanceRecordService } from '../../services/attendance-record.servic
 import { AttendanceRecord } from '../../models/attendance-record.model';
 import { Lesson } from '../../models/course-module.model';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
+import { AutofocusDirective } from '../../../../shared/directives/autofocus.directive';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
-
 /**
  * Katılım işleme formu. Ayrı bir route yerine Kurs Detay ekranındaki
  * Katılımcılar sekmesine gömülüdür.
@@ -18,7 +18,7 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
 @Component({
   selector: 'app-attendance-mark-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent, EmptyStateComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent, EmptyStateComponent, AutofocusDirective],
   templateUrl: './attendance-mark-form.component.html',
   styleUrl: './attendance-mark-form.component.scss',
 })

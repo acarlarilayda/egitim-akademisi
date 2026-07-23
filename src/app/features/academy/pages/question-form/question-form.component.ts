@@ -12,8 +12,8 @@ import {
 import { QuestionService } from '../../services/question.service';
 import { Question } from '../../models/question.model';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
+import { AutofocusDirective } from '../../../../shared/directives/autofocus.directive';
 import { noWhitespaceValidator } from '../../../../shared/validators/no-whitespace.validator';
-
 const MIN_OPTIONS = 2;
 const MAX_OPTIONS = 6;
 
@@ -39,7 +39,7 @@ function minOptionsValidator(min: number): ValidatorFn {
 @Component({
   selector: 'app-question-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent, AutofocusDirective],
   templateUrl: './question-form.component.html',
   styleUrl: './question-form.component.scss',
 })

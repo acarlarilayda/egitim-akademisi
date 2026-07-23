@@ -4,7 +4,7 @@
     [control]="form.get('text')"
     [errorMessages]="{ required: 'Soru metni zorunludur.', whitespace: 'Soru metni sadece boşluk olamaz.' }"
   >
-    <textarea rows="3" formControlName="text"></textarea>
+    <textarea rows="3" formControlName="text" appAutofocus></textarea>
   </app-form-field>
 
   <div class="question-form__options" formArrayName="options">

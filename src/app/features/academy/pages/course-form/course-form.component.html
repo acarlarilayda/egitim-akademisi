@@ -4,7 +4,7 @@
     [control]="form.get('title')"
     [errorMessages]="{ required: 'Kurs adı zorunludur.', whitespace: 'Kurs adı sadece boşluk olamaz.' }"
   >
-    <input type="text" formControlName="title" />
+    <input type="text" formControlName="title" appAutofocus />
   </app-form-field>
 
   <app-form-field

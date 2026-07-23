@@ -30,7 +30,7 @@
     [control]="form.get('lessonId')"
     [errorMessages]="{ required: 'Ders seçimi zorunludur.' }"
   >
-    <select formControlName="lessonId">
+    <select formControlName="lessonId" appAutofocus>
       <option value="" disabled>Seçiniz</option>
       <option *ngFor="let lesson of lessons" [value]="lesson.id">{{ lesson.title }}</option>
     </select>

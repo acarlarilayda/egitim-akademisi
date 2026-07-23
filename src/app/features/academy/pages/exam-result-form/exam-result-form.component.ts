@@ -6,6 +6,7 @@ import { Exam } from '../../models/exam.model';
 import { Participant } from '../../models/participant.model';
 import { Course } from '../../models/course.model';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
+import { AutofocusDirective } from '../../../../shared/directives/autofocus.directive';
 import { SessionService } from '../../../../core/services/session.service';
 
 /**
@@ -21,7 +22,7 @@ import { SessionService } from '../../../../core/services/session.service';
 @Component({
   selector: 'app-exam-result-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent, AutofocusDirective],
   templateUrl: './exam-result-form.component.html',
   styleUrl: './exam-result-form.component.scss',
 })

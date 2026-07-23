@@ -4,7 +4,7 @@
     [control]="form.get('fullName')"
     [errorMessages]="{ required: 'Ad soyad zorunludur.', whitespace: 'Ad soyad sadece boşluk olamaz.' }"
   >
-    <input type="text" formControlName="fullName" />
+    <input type="text" formControlName="fullName" appAutofocus />
   </app-form-field>
 
   <app-form-field
