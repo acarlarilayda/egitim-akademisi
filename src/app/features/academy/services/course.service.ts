@@ -37,6 +37,7 @@ export class CourseService extends AsyncEntityService<Course> {
   /**
    * Yeni bir kurs oluşturur. id, createdAt, updatedAt alanları otomatik
    * üretilir; yeni kurslar her zaman Taslak (Draft) durumunda başlar.
+   * Başarılı oluşturma audit log'a düşer.
    */
   create(courseData: Omit<Course, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Observable<Course> {
     return this.runAsync(() => {
@@ -51,7 +52,23 @@ export class CourseService extends AsyncEntityService<Course> {
 
       this.persistSync([...this.getAllSync(), newCourse]);
       return newCourse;
-    });
+    }).pipe(
+      switchMap((course) => {
+        const activeUser = this.sessionService.currentUser();
+        return this.auditLogService
+          .log({
+            entityType: 'Course',
+            entityId: course.id,
+            action: 'CREATE',
+            performedByUserId: activeUser.id,
+            performedByRole: activeUser.role,
+            description: `Yeni kurs oluşturuldu: ${course.title}`,
+            oldValue: null,
+            newValue: course.status,
+          })
+          .pipe(map(() => course));
+      })
+    );
   }
 
   /**
