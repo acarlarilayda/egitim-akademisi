@@ -47,9 +47,10 @@ veya
 ng test
 ```
 
-Kritik servisler (`enrollment`, `exam-result`, `attendance-record`,
-`certificate-eligibility`), validator'lar (`date-range`, `no-whitespace`,
-`positive-number`) ve `session` servisi için unit testler mevcuttur.
+Kritik servisler (`enrollment`, `course`, `question`, `exam-result`,
+`attendance-record`, `certificate-eligibility`), validator'lar (`date-range`,
+`no-whitespace`, `positive-number`) ve `session` servisi için unit testler
+mevcuttur.
 
 ## 🧑‍💻 Demo Kullanıcıları
 
